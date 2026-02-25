@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include "disp.h"
 
-static uint8_t s_au8FrameBuf[CONFIG_VRAM_TOTAL_ALLOCATED_SIZE] __attribute__((aligned(DCACHE_LINE_SIZE)));
+static uint8_t s_au8FrameBuf[CONFIG_VRAM_TOTAL_ALLOCATED_SIZE] __attribute__((aligned(4)));
 
 void sysDelay(uint32_t ms)
 {
@@ -35,7 +35,7 @@ static void EBI_OptimizeTiming(void)
 #define TAHD_MAX(a, b)   ((a) > (b) ? (a) : (b))
     for (int i32MCLKDiv = EBI_MCLKDIV_1; i32MCLKDiv <= EBI_MCLKDIV_128; i32MCLKDiv++)
     {
-        uint32_t u32EBI_MCLK_hz = CLK_GetHCLK0Freq() / (i32MCLKDiv + 1);
+        uint32_t u32EBI_MCLK_hz = CLK_GetHCLKFreq() / (i32MCLKDiv + 1);
 
         /* Convert to cycles */
         uint32_t TACC = ns_to_cycles(EBI_8080_ACCESS_NS,  u32EBI_MCLK_hz) - 1;

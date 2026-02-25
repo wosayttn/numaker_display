@@ -8,6 +8,9 @@
 
 #include "disp.h"
 
+#define DISP_HOR_RES_MAX      320
+#define DISP_VER_RES_MAX      240
+
 int disp_init(void)
 {
     DISP_SET_RST;
@@ -69,7 +72,7 @@ int disp_init(void)
 
     DISP_WRITE_REG(0x36);
 
-    if (LV_HOR_RES_MAX == 240)
+    if (DISP_HOR_RES_MAX == 240)
         DISP_WRITE_DATA(0x48); // for 240x320
     else
         DISP_WRITE_DATA(0xE8); // for 320x240
@@ -137,19 +140,10 @@ int disp_init(void)
     return 0;
 }
 
-void disp_fillrect(uint16_t *pixels, const lv_area_t *area)
+void disp_fillrect(uint16_t *pixels, const disp_area_t *area)
 {
-    int32_t w = lv_area_get_width(area);
-    int32_t h = lv_area_get_height(area);
-
-    LV_LOG_INFO("%08x WxH=%dx%d (%d, %d) (%d, %d)",
-                pixels,
-                lv_area_get_width(area),
-                lv_area_get_height(area),
-                area->x1,
-                area->y1,
-                area->x2,
-                area->y2);
+    int32_t w = (int32_t)(area->x2 - area->x1 + 1);
+    int32_t h = (int32_t)(area->y2 - area->y1 + 1);
 
     disp_set_column(area->x1, area->x2);
     disp_set_page(area->y1, area->y2);

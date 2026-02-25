@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file     main.c
- * @brief    M55M1 Driver Sample Code
+ * @brief    NuMaker Display Driver Sample Code
  *
- * @note
- * Copyright (C) 2018 Nuvoton Technology Corp. All rights reserved.
- ******************************************************************************/
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2026 Nuvoton Technology Corp. All rights reserved.
+ *****************************************************************************/
 
 #include "NuMicro.h"
 #include "disp.h"
@@ -18,7 +18,7 @@ static void sys_init(void)
     SYS_UnlockReg();
 
     /* Enable PLL0 clock from HXT and switch SCLK clock source to PLL0 */
-    CLK_SetBusClock(CLK_SCLKSEL_SCLKSEL_APLL0, CLK_APLLCTL_APLLSRC_HXT, FREQ_220MHZ);
+    CLK_SetBusClock(CLK_SCLKSEL_SCLKSEL_APLL0, CLK_APLLCTL_APLLSRC_HXT, FREQ_200MHZ);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
@@ -143,7 +143,7 @@ static void demo_lcd_flush(const S_LCD_INFO *psLcdInfo)
         start = GetSysTickCycleCount();
         lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sFullRefresh);
         elapsed = GetSysTickCycleCount() - start;
-        printf("[%s] FullRefresh %.2fms.\n", CONFIG_DISPLAY_BOARD_NAME, (double)elapsed * 1000.0 / SystemCoreClock);
+        printf("[%s] %d FullRefresh %.2fms.\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
 
         /* Render to shadow buffer */
         u32AreaPixelCount = disp_area_pixel_count(&sPartialUpdate);
@@ -156,10 +156,10 @@ static void demo_lcd_flush(const S_LCD_INFO *psLcdInfo)
         start = GetSysTickCycleCount();
         lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sPartialUpdate);
         elapsed = GetSysTickCycleCount() - start;
-        printf("[%s] PartialUpdate %.2fms.\n", CONFIG_DISPLAY_BOARD_NAME, (double)elapsed * 1000.0 / SystemCoreClock);
+        printf("[%s] %d PartialUpdate %.2fms.\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
 
         /* Optional: delay to see color */
-        TIMER_Delay(TIMER0, 100000);
+        TIMER_Delay(TIMER0, 1000000);
     }
 }
 

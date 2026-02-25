@@ -59,6 +59,8 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
 {
     int count = byte_len / sizeof(uint16_t);
 
+    while (!lt7381_vram_fifo_isempty());
+
     /* Set Graphic Read/Write position */
     disp_write_reg(0x5F, 0);
     disp_write_reg(0x60, 0);
@@ -72,6 +74,7 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
     // PDMA-M2M feed
     if (count > 512)
     {
+        /* Check VRAM FIFO is full or not. */
         nu_pdma_mempush((void *)CONFIG_DISP_DAT_ADDR, (void *)pixels, 16, count);
     }
     else
@@ -84,8 +87,6 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
             /* Check VRAM FIFO is full or not. */
             while (lt7381_vram_fifo_isfull());
             DISP_WRITE_DATA(pixels[i]);
-            __DSB();
-
             i++;
         }
     }
