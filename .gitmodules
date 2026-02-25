@@ -1,0 +1,8 @@
+[submodule "bsp/m460"]
+	path = bsp/m460
+	url = https://github.com/OpenNuvoton/m460bsp
+	branch = master
+[submodule "bsp/m55m1"]
+	path = bsp/m55m1
+	url = https://github.com/OpenNuvoton/M55M1BSP
+	branch = master	
