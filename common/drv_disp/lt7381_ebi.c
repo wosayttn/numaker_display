@@ -59,8 +59,6 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
 {
     int count = byte_len / sizeof(uint16_t);
 
-    while (!lt7381_vram_fifo_isempty());
-
     /* Set Graphic Read/Write position */
     disp_write_reg(0x5F, 0);
     disp_write_reg(0x60, 0);

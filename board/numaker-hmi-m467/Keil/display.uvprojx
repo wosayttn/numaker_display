@@ -329,7 +329,7 @@
             <uC99>1</uC99>
             <uGnu>1</uGnu>
             <useXO>0</useXO>
-            <v6Lang>6</v6Lang>
+            <v6Lang>3</v6Lang>
             <v6LangP>4</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
@@ -466,11 +466,6 @@
               <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\pdma.c</FilePath>
             </File>
             <File>
-              <FileName>retarget.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\retarget.c</FilePath>
-            </File>
-            <File>
               <FileName>sys.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\sys.c</FilePath>
@@ -494,6 +489,11 @@
               <FileName>startup_m460.S</FileName>
               <FileType>2</FileType>
               <FilePath>..\..\..\bsp\m460\Library\Device\Nuvoton\m460\Source\ARM\startup_m460.S</FilePath>
+            </File>
+            <File>
+              <FileName>retarget.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\retarget.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -725,16 +725,16 @@
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
-          <Device>M467HJHAN</Device>
+          <Device>M467HJHAE</Device>
           <Vendor>Nuvoton</Vendor>
           <PackID>Nuvoton.NuMicroM4_DFP.1.0.1</PackID>
           <PackURL>https://github.com/OpenNuvoton/cmsis-packs/raw/master/Nuvoton_DFP/</PackURL>
           <Cpu>IRAM(0x20000000,0x80000) IROM(0x00000000,0x100000) IROM2(0x0F100000,0x2000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000)</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC40000 -FN2 -FF0M460_AP_1M -FS00 -FL0100000 -FF1M460_LD_8 -FS1F100000 -FL12000 -FP0($$Device:M467HJHAN$Flash\M460_AP_1M.FLM) -FP1($$Device:M467HJHAN$Flash\M460_LD_8.FLM))</FlashDriverDll>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC40000 -FN2 -FF0M460_AP_1M -FS00 -FL0100000 -FF1M460_LD_8 -FS1F100000 -FL12000 -FP0($$Device:M467HJHAE$Flash\M460_AP_1M.FLM) -FP1($$Device:M467HJHAE$Flash\M460_LD_8.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:M467HJHAN$Device\M460\Include\m460.h</RegisterFile>
+          <RegisterFile>$$Device:M467HJHAE$Device\M460\Include\m460.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -744,7 +744,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:M467HJHAN$SVD\Nuvoton\M460.svd</SFDFile>
+          <SFDFile>$$Device:M467HJHAE$SVD\Nuvoton\M460.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -1030,7 +1030,7 @@
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
             <Strict>0</Strict>
-            <EnumInt>0</EnumInt>
+            <EnumInt>1</EnumInt>
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
@@ -1040,10 +1040,10 @@
             <uC99>1</uC99>
             <uGnu>1</uGnu>
             <useXO>0</useXO>
-            <v6Lang>6</v6Lang>
-            <v6LangP>4</v6LangP>
-            <vShortEn>1</vShortEn>
-            <vShortWch>1</vShortWch>
+            <v6Lang>3</v6Lang>
+            <v6LangP>3</v6LangP>
+            <vShortEn>0</vShortEn>
+            <vShortWch>0</vShortWch>
             <v6Lto>1</v6Lto>
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
@@ -1064,7 +1064,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <ClangAsOpt>2</ClangAsOpt>
+            <ClangAsOpt>1</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>m460</Define>
@@ -1085,7 +1085,7 @@
             <ScatterFile></ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc></Misc>
+            <Misc>--map --first='startup_m460.o(RESET)' --datacompressor=off --info=inline --entry Reset_Handler</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -1177,11 +1177,6 @@
               <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\pdma.c</FilePath>
             </File>
             <File>
-              <FileName>retarget.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\retarget.c</FilePath>
-            </File>
-            <File>
               <FileName>sys.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\sys.c</FilePath>
@@ -1205,6 +1200,11 @@
               <FileName>startup_m460.S</FileName>
               <FileType>2</FileType>
               <FilePath>..\..\..\bsp\m460\Library\Device\Nuvoton\m460\Source\ARM\startup_m460.S</FilePath>
+            </File>
+            <File>
+              <FileName>retarget.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\retarget.c</FilePath>
             </File>
           </Files>
         </Group>

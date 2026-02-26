@@ -35,8 +35,8 @@ typedef struct
 
 				// For LT7381 EBI/8080 cycle timing
 				#define CONFIG_DISPLAY_BOARD_NAME  "LCD5_V1.2 , LT7381"
-				#define EBI_8080_ACCESS_NS   35
-				#define EBI_8080_WR_IDLE_NS  0
+				#define EBI_8080_ACCESS_NS   40
+				#define EBI_8080_WR_IDLE_NS  20
 				#define EBI_8080_WR_AHD_NS   5
 				#define EBI_8080_RD_AHD_NS   5
 				#define EBI_8080_RD_IDLE_NS  EBI_8080_WR_IDLE_NS
@@ -61,10 +61,10 @@ typedef struct
 
 				// For NV3041A EBI/8080 cycle timing
 				#define CONFIG_DISPLAY_BOARD_NAME  "LCD43_V1.1, NV3041A"
-				#define EBI_8080_ACCESS_NS   60
-				#define EBI_8080_WR_IDLE_NS  0
-				#define EBI_8080_WR_AHD_NS   15
-				#define EBI_8080_RD_AHD_NS   15
+				#define EBI_8080_ACCESS_NS   55
+				#define EBI_8080_WR_IDLE_NS  20
+				#define EBI_8080_WR_AHD_NS   20
+				#define EBI_8080_RD_AHD_NS   20
 				#define EBI_8080_RD_IDLE_NS  EBI_8080_WR_IDLE_NS
 
 		#else

@@ -173,7 +173,7 @@ static void demo_lcd_flush(const S_LCD_INFO *psLcdInfo)
         start = GetSysTickCycleCount();
         lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sFullRefresh);
         elapsed = GetSysTickCycleCount() - start;
-        printf("[%s] %d FullRefresh %.2fms.\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+        printf("[%s] FullRefresh flush %d pixels, elpased %.2fms.\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
 
         /* Render to shadow buffer */
         u32AreaPixelCount = disp_area_pixel_count(&sPartialUpdate);
@@ -186,7 +186,7 @@ static void demo_lcd_flush(const S_LCD_INFO *psLcdInfo)
         start = GetSysTickCycleCount();
         lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sPartialUpdate);
         elapsed = GetSysTickCycleCount() - start;
-        printf("[%s] %d PartialUpdate %.2fms.\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+        printf("[%s] PartialUpdate flush %d pixels, elpased %.2fms.\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
 
         /* Optional: delay to see color */
         TIMER_Delay(TIMER0, 1000000);

@@ -30,6 +30,15 @@ static uint32_t ns_to_cycles(uint32_t ns, uint32_t clk_hz)
     return (uint32_t)((numerator + 1000000000ULL - 1) / 1000000000ULL);
 }
 
+static uint32_t hz_to_ns(uint32_t hz)
+{
+    if (hz == 0)
+        return 0;
+
+    /* ceil(1e9 / hz) */
+    return (uint32_t)((1000000000ULL + hz - 1) / hz);
+}
+
 static void EBI_OptimizeTiming(void)
 {
 #define TAHD_MAX(a, b)   ((a) > (b) ? (a) : (b))
@@ -44,6 +53,7 @@ static void EBI_OptimizeTiming(void)
         uint32_t R2R  = ns_to_cycles(EBI_8080_RD_IDLE_NS, u32EBI_MCLK_hz);
 
         printf("EBI_MCLK_hz: %d\n", u32EBI_MCLK_hz);
+        printf("EBI_MCLK_ns: %d\n", hz_to_ns(u32EBI_MCLK_hz));
         printf("EBI_8080_ACCESS_NS: %d ns\n", EBI_8080_ACCESS_NS);
         printf("EBI_8080_WR_IDLE_NS: %d ns\n", EBI_8080_WR_IDLE_NS);
         printf("EBI_8080_AHD_NS: %d ns\n", EBI_8080_WR_AHD_NS);
@@ -93,6 +103,7 @@ int lcd_device_initialize(void)
 
     /* Open EBI  */
     EBI_Open(CONFIG_DISP_EBI, EBI_BUSWIDTH_16BIT, EBI_TIMING_FAST, EBI_OPMODE_ADSEPARATE, EBI_CS_ACTIVE_LOW);
+    EBI_ENABLE_WRITE_BUFFER();
     EBI_OptimizeTiming();
 
     return disp_init();
