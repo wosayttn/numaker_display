@@ -10,7 +10,7 @@
 #include <string.h>
 #include "nu_misc.h"
 
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
     #include "FreeRTOS.h"
     #include "task.h"
     #include "semphr.h"
@@ -75,7 +75,7 @@ struct nu_pdma_memfun_actor
 {
     int         m_i32ChannID;
     uint32_t    m_u32Result;
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
     SemaphoreHandle_t m_psSemMemFun;
 #else
     volatile uint32_t m_psSemMemFun;
@@ -214,7 +214,7 @@ static void nu_pdma_init(void)
         PDMA_Open(psPDMA, PDMA_CH_Msk);
         PDMA_Close(psPDMA);
 
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
         NVIC_SetPriority(nu_pdma_arr[i].eIRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1);
 #endif
 
@@ -1033,7 +1033,7 @@ static void nu_pdma_memfun_actor_init(void)
         memset(&nu_pdma_memfun_actor_arr[i], 0, sizeof(struct nu_pdma_memfun_actor));
         if (-(1) != (nu_pdma_memfun_actor_arr[i].m_i32ChannID = nu_pdma_channel_allocate(PDMA_MEM)))
         {
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
             nu_pdma_memfun_actor_arr[i].m_psSemMemFun = xSemaphoreCreateBinary();
             PDMA_ASSERT(nu_pdma_memfun_actor_arr[i].m_psSemMemFun != NULL);
 #else
@@ -1055,7 +1055,7 @@ static void nu_pdma_memfun_cb(void *pvUserData, uint32_t u32Events)
     nu_pdma_memfun_actor_t psMemFunActor = (nu_pdma_memfun_actor_t)pvUserData;
     psMemFunActor->m_u32Result = u32Events;
 
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
     xSemaphoreGiveFromISR(psMemFunActor->m_psSemMemFun, &xHigherPriorityTaskWoken);
@@ -1127,7 +1127,7 @@ static int nu_pdma_memfun(void *dest, void *src, uint32_t u32DataWidth, unsigned
                      0);
 
     /* Wait it done. */
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
     while (xSemaphoreTake(psMemFunActor->m_psSemMemFun, portMAX_DELAY) != pdTRUE);
 #else
     while (psMemFunActor->m_psSemMemFun == 0);

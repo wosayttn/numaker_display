@@ -39,7 +39,6 @@ void DISP_WRITE_DATA(uint8_t u8Dat)
 static void DISP_WRITE_DATA_2B(uint16_t u16Dat)
 {
     SPI_SET_DATA_WIDTH(CONFIG_DISP_SPI, 16);
-
     nu_spi_transfer(&s_NuSPI, (const void *)&u16Dat, NULL, 2);
 }
 

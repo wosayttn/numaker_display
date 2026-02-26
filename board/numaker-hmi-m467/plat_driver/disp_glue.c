@@ -13,7 +13,7 @@ static uint8_t s_au8FrameBuf[CONFIG_VRAM_TOTAL_ALLOCATED_SIZE] __attribute__((al
 
 void sysDelay(uint32_t ms)
 {
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
     vTaskDelay(pdMS_TO_TICKS(ms));
 #else
     TIMER_Delay(TIMER0, ms * 1000);

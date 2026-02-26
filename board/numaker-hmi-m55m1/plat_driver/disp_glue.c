@@ -13,7 +13,7 @@ static uint8_t s_au8FrameBuf[CONFIG_VRAM_TOTAL_ALLOCATED_SIZE] __attribute__((al
 
 void sysDelay(uint32_t ms)
 {
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
     vTaskDelay(pdMS_TO_TICKS(ms));
 #else
     TIMER_Delay(TIMER0, ms * 1000);
@@ -38,6 +38,8 @@ static uint32_t hz_to_ns(uint32_t hz)
     /* ceil(1e9 / hz) */
     return (uint32_t)((1000000000ULL + hz - 1) / hz);
 }
+
+#if defined(CONFIG_DISP_EBI)
 
 static void EBI_OptimizeTiming(void)
 {
@@ -88,23 +90,46 @@ static void EBI_OptimizeTiming(void)
 
     printf("Failed to found avaialbe 8080 timing parameter for this panel.\n");
 }
+#endif
 
 int lcd_device_initialize(void)
 {
     GPIO_T *PORT;
 
     /* Set GPIO Output mode for display pins. */
+#if defined(CONFIG_DISP_PIN_RESET)
     PORT    = (GPIO_T *)(GPIOA_BASE + (NU_GET_PORT(CONFIG_DISP_PIN_RESET) * PORT_OFFSET));
     GPIO_SetMode(PORT, NU_GET_PIN_MASK(NU_GET_PIN(CONFIG_DISP_PIN_RESET)), GPIO_MODE_OUTPUT);
+#endif
 
+#if defined(CONFIG_DISP_PIN_BACKLIGHT)
     PORT    = (GPIO_T *)(GPIOA_BASE + (NU_GET_PORT(CONFIG_DISP_PIN_BACKLIGHT) * PORT_OFFSET));
     GPIO_SetMode(PORT, NU_GET_PIN_MASK(NU_GET_PIN(CONFIG_DISP_PIN_BACKLIGHT)), GPIO_MODE_OUTPUT);
+#endif
 
+#if defined(CONFIG_DISP_PIN_DC)
+    PORT    = (GPIO_T *)(GPIOA_BASE + (NU_GET_PORT(CONFIG_DISP_PIN_DC) * PORT_OFFSET));
+    GPIO_SetMode(PORT, NU_GET_PIN_MASK(NU_GET_PIN(CONFIG_DISP_PIN_DC)), GPIO_MODE_OUTPUT);
+#endif
 
+#if defined(CONFIG_DISP_EBI)
     /* Open EBI  */
     EBI_Open(CONFIG_DISP_EBI, EBI_BUSWIDTH_16BIT, EBI_TIMING_FAST, EBI_OPMODE_ADSEPARATE, EBI_CS_ACTIVE_LOW);
     EBI_ENABLE_WRITE_BUFFER();
     EBI_OptimizeTiming();
+#elif defined(CONFIG_DISP_SPI)
+    /* Open SPI */
+    SPI_Open(CONFIG_DISP_SPI, SPI_MASTER, SPI_MODE_0, 8, CONFIG_DISP_SPI_CLOCK);
+
+    /* Set sequence to MSB first */
+    SPI_SET_MSB_FIRST(CONFIG_DISP_SPI);
+
+    /* Set CS pin to HIGH */
+    SPI_SET_SS_HIGH(CONFIG_DISP_SPI);
+
+    /* Set sequence to MSB first */
+    SPI_SET_MSB_FIRST(CONFIG_DISP_SPI);
+#endif
 
     return disp_init();
 }

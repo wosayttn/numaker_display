@@ -40,6 +40,34 @@ static void sys_init(void)
 
     /* Enable EBI clock */
     CLK_EnableModuleClock(EBI0_MODULE);
+
+    /* Enable I2C1 clock */
+    CLK_EnableModuleClock(I2C1_MODULE);
+
+    /* Enable SPI2 clock */
+    CLK_EnableModuleClock(SPI2_MODULE);
+
+    /* Enable PDMA clock */
+    CLK_EnableModuleClock(PDMA0_MODULE);
+    CLK_EnableModuleClock(PDMA1_MODULE);
+
+    /* Select TIMER clock source */
+    CLK_SetModuleClock(TMR0_MODULE, CLK_TMRSEL_TMR0SEL_HIRC, 0);
+
+    /* Enable TIMER module clock */
+    CLK_EnableModuleClock(TMR0_MODULE);
+
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Init I/O Multi-function                                                                                 */
+    /*---------------------------------------------------------------------------------------------------------*/
+    SET_SPI2_SS_PA11();
+    SET_SPI2_CLK_PA10();
+    SET_SPI2_MISO_PA9();
+    SET_SPI2_MOSI_PA8();
+
+    SET_I2C1_SDA_PB10();
+    SET_I2C1_SCL_PB11();
+
     SET_EBI_AD0_PA5();
     SET_EBI_AD1_PA4();
     SET_EBI_AD2_PC2();
@@ -61,7 +89,6 @@ static void sys_init(void)
     SET_EBI_nCS0_PD14();
     SET_EBI_ADR0_PH7();
     GPIO_SetSlewCtl(PH, (BIT7 | BIT8 | BIT9 | BIT10 | BIT11), GPIO_SLEWCTL_HIGH);
-
     GPIO_SetSlewCtl(PA, (BIT4 | BIT5), GPIO_SLEWCTL_HIGH);
     GPIO_SetSlewCtl(PC, (BIT2 | BIT3 | BIT4 | BIT5), GPIO_SLEWCTL_HIGH);
     GPIO_SetSlewCtl(PD, (BIT8 | BIT9), GPIO_SLEWCTL_HIGH);
@@ -70,24 +97,6 @@ static void sys_init(void)
     GPIO_SetSlewCtl(PJ, (BIT8 | BIT9), GPIO_SLEWCTL_HIGH);
     GPIO_SetSlewCtl(PD, BIT14, GPIO_SLEWCTL_HIGH);
 
-    /* Enable I2C1 clock */
-    CLK_EnableModuleClock(I2C1_MODULE);
-    SET_I2C1_SDA_PB10();
-    SET_I2C1_SCL_PB11();
-
-    /* Enable PDMA clock */
-    CLK_EnableModuleClock(PDMA0_MODULE);
-    CLK_EnableModuleClock(PDMA1_MODULE);
-
-    /* Select TIMER clock source */
-    CLK_SetModuleClock(TMR0_MODULE, CLK_TMRSEL_TMR0SEL_HIRC, 0);
-
-    /* Enable TIMER module clock */
-    CLK_EnableModuleClock(TMR0_MODULE);
-
-    /*---------------------------------------------------------------------------------------------------------*/
-    /* Init I/O Multi-function                                                                                 */
-    /*---------------------------------------------------------------------------------------------------------*/
     SetDebugUartMFP();
 
     InitDebugUart();

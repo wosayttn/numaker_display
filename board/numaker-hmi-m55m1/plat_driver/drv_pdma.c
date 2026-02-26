@@ -10,7 +10,7 @@
 #include <string.h>
 #include "nu_misc.h"
 
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
     #include "FreeRTOS.h"
     #include "task.h"
     #include "semphr.h"
@@ -75,7 +75,7 @@ struct nu_pdma_memfun_actor
 {
     int         m_i32ChannID;
     uint32_t    m_u32Result;
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
     SemaphoreHandle_t m_psSemMemFun;
 #else
     volatile uint32_t m_psSemMemFun;
@@ -127,6 +127,18 @@ static const nu_pdma_periph_ctl_t g_nu_pdma_peripheral_ctl_pool[ ] =
 {
     // M2M
     { PDMA_MEM, eMemCtl_SrcInc_DstInc },
+
+    // M2P
+    { PDMA_SPI0_TX,  eMemCtl_SrcInc_DstFix },
+    { PDMA_SPI1_TX,  eMemCtl_SrcInc_DstFix },
+    { PDMA_SPI2_TX,  eMemCtl_SrcInc_DstFix },
+    { PDMA_SPI3_TX,  eMemCtl_SrcInc_DstFix },
+
+    // P2M
+    { PDMA_SPI0_RX, eMemCtl_SrcFix_DstInc },
+    { PDMA_SPI1_RX, eMemCtl_SrcFix_DstInc },
+    { PDMA_SPI2_RX, eMemCtl_SrcFix_DstInc },
+    { PDMA_SPI3_RX, eMemCtl_SrcFix_DstInc },
 };
 #define NU_PERIPHERAL_SIZE ( sizeof(g_nu_pdma_peripheral_ctl_pool) / sizeof(g_nu_pdma_peripheral_ctl_pool[0]) )
 
@@ -188,7 +200,7 @@ static void nu_pdma_init(void)
         PDMA_Open(psPDMA, PDMA_CH_Msk);
         PDMA_Close(psPDMA);
 
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
         NVIC_SetPriority(nu_pdma_arr[i].eIRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1);
 #endif
 
@@ -855,7 +867,7 @@ static int _nu_pdma_transfer_chain(int i32ChannID, uint32_t u32DataWidth, uint32
 
     psPeriphCtl = &psPdmaChann->m_spPeripCtl;
 
-	uint32_t needed = (u32TransferCnt / NU_PDMA_MAX_TXCNT + 1);
+    uint32_t needed = (u32TransferCnt / NU_PDMA_MAX_TXCNT + 1);
 
     if (needed > psPdmaChann->m_u32WantedSGTblNum)
     {
@@ -1080,7 +1092,7 @@ static void nu_pdma_memfun_actor_init(void)
         memset(&nu_pdma_memfun_actor_arr[i], 0, sizeof(struct nu_pdma_memfun_actor));
         if (-(1) != (nu_pdma_memfun_actor_arr[i].m_i32ChannID = nu_pdma_channel_allocate(PDMA_MEM)))
         {
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
             nu_pdma_memfun_actor_arr[i].m_psSemMemFun = xSemaphoreCreateBinary();
             PDMA_ASSERT(nu_pdma_memfun_actor_arr[i].m_psSemMemFun != NULL);
 #else
@@ -1102,7 +1114,7 @@ static void nu_pdma_memfun_cb(void *pvUserData, uint32_t u32Events)
     nu_pdma_memfun_actor_t psMemFunActor = (nu_pdma_memfun_actor_t)pvUserData;
     psMemFunActor->m_u32Result = u32Events;
 
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
     xSemaphoreGiveFromISR(psMemFunActor->m_psSemMemFun, &xHigherPriorityTaskWoken);
@@ -1174,7 +1186,7 @@ static int nu_pdma_memfun(void *dest, void *src, uint32_t u32DataWidth, unsigned
                      0);
 
     /* Wait it done. */
-#if defined(LV_USE_OS) && (LV_USE_OS==LV_OS_FREERTOS)
+#if defined(__FREERTOS__)
     while (xSemaphoreTake(psMemFunActor->m_psSemMemFun, portMAX_DELAY) != pdTRUE);
 #else
     while (psMemFunActor->m_psSemMemFun == 0);

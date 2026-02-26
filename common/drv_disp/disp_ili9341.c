@@ -8,9 +8,6 @@
 
 #include "disp.h"
 
-#define DISP_HOR_RES_MAX      320
-#define DISP_VER_RES_MAX      240
-
 int disp_init(void)
 {
     DISP_SET_RST;

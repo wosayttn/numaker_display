@@ -72,7 +72,6 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
     // PDMA-M2M feed
     if (count > 512)
     {
-        /* Check VRAM FIFO is full or not. */
         nu_pdma_mempush((void *)CONFIG_DISP_DAT_ADDR, (void *)pixels, 16, count);
     }
     else
