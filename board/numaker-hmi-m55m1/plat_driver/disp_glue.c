@@ -7,6 +7,7 @@
  *****************************************************************************/
 
 #include <stdint.h>
+#include <math.h>
 #include "disp.h"
 
 static uint8_t s_au8FrameBuf[CONFIG_VRAM_TOTAL_ALLOCATED_SIZE] __attribute__((aligned(DCACHE_LINE_SIZE)));
@@ -20,23 +21,40 @@ void sysDelay(uint32_t ms)
 #endif
 }
 
-static uint32_t ns_to_cycles(uint32_t ns, uint32_t clk_hz)
+static uint32_t ns_to_cycles_ceil(double ns, double clk_hz)
 {
-    if (ns == 0 || clk_hz == 0)
+    if (ns <= 0.0 || clk_hz <= 0.0)
         return 0;
 
-    uint64_t numerator = (uint64_t)ns * clk_hz;
-
-    return (uint32_t)((numerator + 1000000000ULL - 1) / 1000000000ULL);
+    /* ceil(ns * clk_hz / 1e9) */
+    double cycles = (ns * clk_hz) / 1e9;
+    return (uint32_t)ceil(cycles);
 }
 
-static uint32_t hz_to_ns(uint32_t hz)
+static uint32_t hz_to_ns_ceil(double hz)
 {
-    if (hz == 0)
+    if (hz <= 0.0)
         return 0;
 
     /* ceil(1e9 / hz) */
-    return (uint32_t)((1000000000ULL + hz - 1) / hz);
+    double ns = 1e9 / hz;
+    return (uint32_t)ceil(ns);
+}
+
+static double ns_to_cycles(double ns, double clk_hz)
+{
+    if (ns <= 0.0 || clk_hz <= 0.0)
+        return 0;
+
+    return (ns * clk_hz) / 1e9;
+}
+
+static double hz_to_ns(double hz)
+{
+    if (hz <= 0.0)
+        return 0;
+
+    return 1e9 / hz;;
 }
 
 #if defined(CONFIG_DISP_EBI)
@@ -44,18 +62,20 @@ static uint32_t hz_to_ns(uint32_t hz)
 static void EBI_OptimizeTiming(void)
 {
 #define TAHD_MAX(a, b)   ((a) > (b) ? (a) : (b))
+#define TASU_CYCLE       (1)
+
     for (int i32MCLKDiv = EBI_MCLKDIV_1; i32MCLKDiv <= EBI_MCLKDIV_128; i32MCLKDiv++)
     {
-        uint32_t u32EBI_MCLK_hz = CLK_GetHCLK0Freq() / (i32MCLKDiv + 1);
+        double fEBI_MCLK_hz = (double)CLK_GetHCLK0Freq() / (i32MCLKDiv + 1);
 
         /* Convert to cycles */
-        uint32_t TACC = ns_to_cycles(EBI_8080_ACCESS_NS,  u32EBI_MCLK_hz) - 1;
-        uint32_t W2X  = ns_to_cycles(EBI_8080_WR_IDLE_NS, u32EBI_MCLK_hz);
-        uint32_t TAHD = ns_to_cycles(TAHD_MAX(EBI_8080_WR_AHD_NS, EBI_8080_RD_AHD_NS),  u32EBI_MCLK_hz);
-        uint32_t R2R  = ns_to_cycles(EBI_8080_RD_IDLE_NS, u32EBI_MCLK_hz);
+        uint32_t TACC = ns_to_cycles_ceil(EBI_8080_ACCESS_NS,  fEBI_MCLK_hz) - TASU_CYCLE;
+        uint32_t W2X  = ns_to_cycles_ceil(EBI_8080_WR_IDLE_NS, fEBI_MCLK_hz);
+        uint32_t TAHD = ns_to_cycles_ceil(TAHD_MAX(EBI_8080_WR_AHD_NS, EBI_8080_RD_AHD_NS),  fEBI_MCLK_hz);
+        uint32_t R2R  = ns_to_cycles_ceil(EBI_8080_RD_IDLE_NS, fEBI_MCLK_hz);
 
-        printf("EBI_MCLK_hz: %d\n", u32EBI_MCLK_hz);
-        printf("EBI_MCLK_ns: %d\n", hz_to_ns(u32EBI_MCLK_hz));
+        printf("EBI_MCLK_hz: %f\n", fEBI_MCLK_hz);
+        printf("EBI_MCLK_ns: %f\n", hz_to_ns(fEBI_MCLK_hz));
         printf("EBI_8080_ACCESS_NS: %d ns\n", EBI_8080_ACCESS_NS);
         printf("EBI_8080_WR_IDLE_NS: %d ns\n", EBI_8080_WR_IDLE_NS);
         printf("EBI_8080_AHD_NS: %d ns\n", EBI_8080_WR_AHD_NS);
