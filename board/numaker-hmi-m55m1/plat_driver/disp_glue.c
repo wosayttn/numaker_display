@@ -78,8 +78,8 @@ static void EBI_OptimizeTiming(void)
         printf("EBI_MCLK_ns: %f\n", hz_to_ns(fEBI_MCLK_hz));
         printf("EBI_8080_ACCESS_NS: %d ns\n", EBI_8080_ACCESS_NS);
         printf("EBI_8080_WR_IDLE_NS: %d ns\n", EBI_8080_WR_IDLE_NS);
-        printf("EBI_8080_AHD_NS: %d ns\n", EBI_8080_WR_AHD_NS);
-        printf("EBI_8080_AHD_NS: %d ns\n", EBI_8080_RD_AHD_NS);
+        printf("EBI_8080_WR_AHD_NS: %d ns\n", EBI_8080_WR_AHD_NS);
+        printf("EBI_8080_RD_AHD_NS: %d ns\n", EBI_8080_RD_AHD_NS);
         printf("EBI_8080_RD_IDLE_NS: %d ns\n", EBI_8080_RD_IDLE_NS);
         printf("Calculated: TACC:%d, W2X:%d, TAHD:%d, R2R:%d\n", TACC, W2X, TAHD, R2R);
 
