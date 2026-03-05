@@ -10,7 +10,7 @@
       <TargetName>LCD5_V1_2</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6220000::V6.22::ARMCLANG</pCCUsed>
+      <pCCUsed>6240000::V6.24::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -526,11 +526,6 @@
           <GroupName>helper</GroupName>
           <Files>
             <File>
-              <FileName>perf_ev.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\perf_ev.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_pdma.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\plat_driver\drv_pdma.c</FilePath>
@@ -544,6 +539,21 @@
               <FileName>drv_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\plat_driver\drv_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>sw_crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\sw_crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>perf_ev.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\perf_ev.c</FilePath>
+            </File>
+            <File>
+              <FileName>display_testcases.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\display_testcases.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -820,7 +830,7 @@
       <TargetName>LCD43_V1_1</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6220000::V6.22::ARMCLANG</pCCUsed>
+      <pCCUsed>6240000::V6.24::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -1336,11 +1346,6 @@
           <GroupName>helper</GroupName>
           <Files>
             <File>
-              <FileName>perf_ev.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\perf_ev.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_pdma.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\plat_driver\drv_pdma.c</FilePath>
@@ -1354,6 +1359,21 @@
               <FileName>drv_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\plat_driver\drv_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>sw_crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\sw_crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>perf_ev.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\perf_ev.c</FilePath>
+            </File>
+            <File>
+              <FileName>display_testcases.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\display_testcases.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1630,7 +1650,7 @@
       <TargetName>LCD43_V1_0</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6220000::V6.22::ARMCLANG</pCCUsed>
+      <pCCUsed>6240000::V6.24::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -2146,11 +2166,6 @@
           <GroupName>helper</GroupName>
           <Files>
             <File>
-              <FileName>perf_ev.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\perf_ev.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_pdma.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\plat_driver\drv_pdma.c</FilePath>
@@ -2164,6 +2179,21 @@
               <FileName>drv_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\plat_driver\drv_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>sw_crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\sw_crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>perf_ev.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\perf_ev.c</FilePath>
+            </File>
+            <File>
+              <FileName>display_testcases.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\display_testcases.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2440,7 +2470,7 @@
       <TargetName>NUTFT_V1_3</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6220000::V6.22::ARMCLANG</pCCUsed>
+      <pCCUsed>6240000::V6.24::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -2956,11 +2986,6 @@
           <GroupName>helper</GroupName>
           <Files>
             <File>
-              <FileName>perf_ev.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\perf_ev.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_pdma.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\plat_driver\drv_pdma.c</FilePath>
@@ -2974,6 +2999,21 @@
               <FileName>drv_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\plat_driver\drv_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>sw_crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\sw_crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>perf_ev.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\perf_ev.c</FilePath>
+            </File>
+            <File>
+              <FileName>display_testcases.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\display_testcases.c</FilePath>
             </File>
           </Files>
         </Group>

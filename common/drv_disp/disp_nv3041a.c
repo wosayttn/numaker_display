@@ -149,7 +149,12 @@ void disp_fillrect(uint16_t *pixels, const disp_area_t *area)
 
     disp_set_column(area->x1, area->x2);
     disp_set_page(area->y1, area->y2);
-    DISP_WRITE_REG(0x2c);
+    DISP_WRITE_REG(0x2C);
 
     disp_send_pixels(pixels, h * w * sizeof(uint16_t));
+}
+
+void disp_readrect(uint16_t *pixels, const disp_area_t *area)
+{
+    printf("[%s] Not supported\n", __func__);
 }

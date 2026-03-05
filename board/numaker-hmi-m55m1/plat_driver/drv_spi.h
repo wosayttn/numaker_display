@@ -42,7 +42,88 @@ struct nu_spi
 };
 typedef struct nu_spi *nu_spi_t;
 
+#define SPI_ASSERT(expr)             \
+    do {                             \
+        if(!(expr)) {                \
+            while(1);                \
+        }                            \
+    } while(0)
+
+#define SPI_GET_DATA_WIDTH(spi)  (((spi)->CTL & SPI_CTL_DWIDTH_Msk) >> SPI_CTL_DWIDTH_Pos)
+
+__STATIC_INLINE int nu_spi_read(SPI_T *spi, uint8_t *rx, int dw)
+{
+    // Read RX data
+    if (!SPI_GET_RX_FIFO_EMPTY_FLAG(spi))
+    {
+        uint32_t val;
+        // Read data from SPI RX FIFO
+        switch (dw)
+        {
+        case 4:
+            val = SPI_READ_RX(spi);
+            nu_set32_le(rx, val);
+            break;
+        case 3:
+            val = SPI_READ_RX(spi);
+            nu_set24_le(rx, val);
+            break;
+        case 2:
+            val = SPI_READ_RX(spi);
+            nu_set16_le(rx, val);
+            break;
+        case 1:
+            *rx = SPI_READ_RX(spi);
+            break;
+        default:
+            SPI_ASSERT(0);
+        }
+    }
+    else
+        return 0;
+
+    return dw;
+}
+
+__STATIC_INLINE int nu_spi_write(SPI_T *spi, const uint8_t *tx, int dw)
+{
+    // Wait SPI TX send data
+    while (SPI_GET_TX_FIFO_FULL_FLAG(spi));
+
+    // Input data to SPI TX
+    switch (dw)
+    {
+    case 4:
+        SPI_WRITE_TX(spi, nu_get32_le(tx));
+        break;
+    case 3:
+        SPI_WRITE_TX(spi, nu_get24_le(tx));
+        break;
+    case 2:
+        SPI_WRITE_TX(spi, nu_get16_le(tx));
+        break;
+    case 1:
+        SPI_WRITE_TX(spi, *((uint8_t *)tx));
+        break;
+    default:
+        SPI_ASSERT(0);
+    }
+
+    return dw;
+}
+
+__STATIC_INLINE void nu_spi_drain_rxfifo(SPI_T *spi)
+{
+    while (SPI_IS_BUSY(spi));
+
+    // Drain SPI RX FIFO, make sure RX FIFO is empty
+    while (!SPI_GET_RX_FIFO_EMPTY_FLAG(spi))
+    {
+        SPI_ClearRxFIFO(spi);
+    }
+}
+
 int nu_spi_transfer(struct nu_spi *psNuSPI, const void *tx, void *rx, int length);
-int nu_spi_send_then_recv(SPI_T *spi, const uint8_t *tx, int tx_len, uint8_t *rx, int rx_len, int dw);
+int nu_spi_send_then_recv(struct nu_spi *psNuSPI, const uint8_t *tx, int tx_len, uint8_t *rx, int rx_len, int dw);
 
 #endif //__DRV_SPI_H__

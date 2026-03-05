@@ -7,85 +7,6 @@
  *****************************************************************************/
 #include "drv_spi.h"
 
-#define SPI_GET_DATA_WIDTH(spi)  (((spi)->CTL & SPI_CTL_DWIDTH_Msk) >> SPI_CTL_DWIDTH_Pos)
-
-#define SPI_ASSERT(expr)                                      \
-    do {                                                       \
-        if(!(expr)) {                                          \
-            while(1);                                          \
-        }                                                      \
-    } while(0)
-
-__STATIC_INLINE int nu_spi_read(SPI_T *spi, uint8_t *rx, int dw)
-{
-    // Read RX data
-    if (!SPI_GET_RX_FIFO_EMPTY_FLAG(spi))
-    {
-        uint32_t val;
-        // Read data from SPI RX FIFO
-        switch (dw)
-        {
-        case 4:
-            val = SPI_READ_RX(spi);
-            nu_set32_le(rx, val);
-            break;
-        case 3:
-            val = SPI_READ_RX(spi);
-            nu_set24_le(rx, val);
-            break;
-        case 2:
-            val = SPI_READ_RX(spi);
-            nu_set16_le(rx, val);
-            break;
-        case 1:
-            *rx = SPI_READ_RX(spi);
-            break;
-        default:
-            SPI_ASSERT(0);
-        }
-    }
-
-    return dw;
-}
-
-__STATIC_INLINE int nu_spi_write(SPI_T *spi, const uint8_t *tx, int dw)
-{
-    // Wait SPI TX send data
-    while (SPI_GET_TX_FIFO_FULL_FLAG(spi));
-
-    // Input data to SPI TX
-    switch (dw)
-    {
-    case 4:
-        SPI_WRITE_TX(spi, nu_get32_le(tx));
-        break;
-    case 3:
-        SPI_WRITE_TX(spi, nu_get24_le(tx));
-        break;
-    case 2:
-        SPI_WRITE_TX(spi, nu_get16_le(tx));
-        break;
-    case 1:
-        SPI_WRITE_TX(spi, *((uint8_t *)tx));
-        break;
-    default:
-        SPI_ASSERT(0);
-    }
-
-    return dw;
-}
-
-__STATIC_INLINE void nu_spi_drain_rxfifo(SPI_T *spi)
-{
-    while (SPI_IS_BUSY(spi));
-
-    // Drain SPI RX FIFO, make sure RX FIFO is empty
-    while (!SPI_GET_RX_FIFO_EMPTY_FLAG(spi))
-    {
-        SPI_ClearRxFIFO(spi);
-    }
-}
-
 static int nu_spi_transmit_poll(struct nu_spi *psNuSPI, const uint8_t *tx, uint8_t *rx, int length, int dw)
 {
     SPI_T *base = psNuSPI->base;
@@ -151,36 +72,57 @@ static int nu_spi_transmit_poll(struct nu_spi *psNuSPI, const uint8_t *tx, uint8
     return length;
 }
 
-int nu_spi_send_then_recv(SPI_T *base, const uint8_t *tx, int tx_len, uint8_t *rx, int rx_len, int dw)
+int nu_spi_send_then_recv(struct nu_spi *psNuSPI, const uint8_t *tx, int tx_len, uint8_t *rx, int rx_len, int dw)
 {
-    SPI_SET_SS_LOW(base);
+    dw = SPI_GET_DATA_WIDTH(psNuSPI->base) / 8;
+
+    if (psNuSPI->ss_pin > 0)
+    {
+        GPIO_PIN_DATA(NU_GET_PORT(psNuSPI->ss_pin), NU_GET_PIN(psNuSPI->ss_pin)) = 0;
+    }
+    else
+    {
+        SPI_SET_SS_LOW(psNuSPI->base);
+    }
 
     if (tx)
     {
         while (tx_len > 0)
         {
-            tx += nu_spi_write(base, tx, dw);
+            tx += nu_spi_write(psNuSPI->base, tx, dw);
             tx_len -= dw;
         }
     }
 
     /* Clear SPI RX FIFO */
-    nu_spi_drain_rxfifo(base);
+    nu_spi_drain_rxfifo(psNuSPI->base);
 
     if (rx)
     {
         uint32_t dummy = 0xffffffff;
-        while (rx_len > 0)
+        uint8_t *curr = rx;
+        uint32_t remain = rx_len;
+        while (remain > 0)
         {
             /* Input data to SPI TX FIFO */
-            rx_len -= nu_spi_write(base, (const uint8_t *)&dummy, dw);
-            while (SPI_IS_BUSY(base));
-            if (!SPI_GET_RX_FIFO_EMPTY_FLAG(base))
-                rx += nu_spi_read(base, rx, dw);
+            remain -= nu_spi_write(psNuSPI->base, (const uint8_t *)&dummy, dw);
+            curr += nu_spi_read(psNuSPI->base, curr, dw);
+        }
+        while (SPI_IS_BUSY(psNuSPI->base));
+        while ((rx + rx_len) != curr)
+        {
+            curr += nu_spi_read(psNuSPI->base, curr, dw);
         }
     }
 
-    SPI_SET_SS_HIGH(base);
+    if (psNuSPI->ss_pin > 0)
+    {
+        GPIO_PIN_DATA(NU_GET_PORT(psNuSPI->ss_pin), NU_GET_PIN(psNuSPI->ss_pin)) = 1;
+    }
+    else
+    {
+        SPI_SET_SS_HIGH(psNuSPI->base);
+    }
 
     return 0;
 }

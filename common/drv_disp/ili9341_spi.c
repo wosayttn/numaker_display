@@ -42,12 +42,6 @@ static void DISP_WRITE_DATA_2B(uint16_t u16Dat)
     nu_spi_transfer(&s_NuSPI, (const void *)&u16Dat, NULL, 2);
 }
 
-void disp_send_pixels(uint16_t *pixels, int byte_len)
-{
-    SPI_SET_DATA_WIDTH(CONFIG_DISP_SPI, 16);
-    nu_spi_transfer(&s_NuSPI, (const void *)pixels, NULL, byte_len);
-}
-
 void disp_set_column(uint16_t StartCol, uint16_t EndCol)
 {
     DISP_WRITE_REG(0x2A);
@@ -60,4 +54,45 @@ void disp_set_page(uint16_t StartPage, uint16_t EndPage)
     DISP_WRITE_REG(0x2B);
     DISP_WRITE_DATA_2B(StartPage);
     DISP_WRITE_DATA_2B(EndPage);
+}
+
+void disp_send_pixels(uint16_t *pixels, int byte_len)
+{
+    SPI_SET_DATA_WIDTH(CONFIG_DISP_SPI, 16);
+    nu_spi_transfer(&s_NuSPI, (const void *)pixels, NULL, byte_len);
+}
+
+static void debug_read_id(void)
+{
+    uint8_t cmd = 0x04;
+    uint8_t id_data[4];
+
+    nu_spi_send_then_recv(&s_NuSPI, (const uint8_t *)&cmd, 1, id_data, 4, 1);
+    printf("LCD ID: %02X %02X %02X %02X\n", id_data[0], id_data[1], id_data[2], id_data[3]);
+}
+
+static void disp_receive_pixel(uint16_t *pixel)
+{
+    typedef union
+    {
+        uint32_t rgbx;
+        struct
+        {
+            uint8_t x;
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+        } S;
+    } ili9341_pixel;
+    ili9341_pixel bgrx;
+
+    uint8_t cmd = 0x2E;
+    nu_spi_send_then_recv(&s_NuSPI, (const uint8_t *)&cmd, 1, (uint8_t *)&bgrx, sizeof(bgrx), 1);
+    printf("%08x\n", bgrx.rgbx);
+}
+
+void disp_receive_pixels(uint16_t *pixels, int byte_len)
+{
+    //debug_read_id();
+    //disp_receive_pixel(pixels);
 }

@@ -11,6 +11,7 @@ typedef enum
     evLCD_CTRL_PAN_DISPLAY,
     evLCD_CTRL_WAIT_VSYNC,
     evLCD_CTRL_RECT_UPDATE,
+    evLCD_CTRL_RECT_READ,
     evLCD_CTRL_CNT
 } E_LCD_CTRL;
 

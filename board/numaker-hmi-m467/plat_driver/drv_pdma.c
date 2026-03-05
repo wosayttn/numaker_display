@@ -806,7 +806,7 @@ static int _nu_pdma_transfer_chain(int i32ChannID, uint32_t u32DataWidth, uint32
 
     psPeriphCtl = &psPdmaChann->m_spPeripCtl;
 
-	uint32_t needed = (u32TransferCnt / NU_PDMA_MAX_TXCNT + 1);
+    uint32_t needed = (u32TransferCnt / NU_PDMA_MAX_TXCNT + 1);
 
     if (needed > psPdmaChann->m_u32WantedSGTblNum)
     {

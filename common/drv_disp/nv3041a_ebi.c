@@ -43,7 +43,7 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
 
 #if defined(CONFIG_DISP_USE_PDMA)
     // PDMA-M2M feed
-    if (count > 1024)
+    if (count > 512)
         nu_pdma_mempush((void *)CONFIG_DISP_DAT_ADDR, (void *)pixels, 16, count);
     else
 #endif

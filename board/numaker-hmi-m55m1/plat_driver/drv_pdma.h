@@ -82,5 +82,6 @@ int nu_pdma_m2m_desc_setup(nu_pdma_desc_t dma_desc, uint32_t u32DataWidth, uint3
 // For memory actor
 void *nu_pdma_memcpy(void *dest, void *src, unsigned int count);
 int nu_pdma_mempush(void *dest, void *src, uint32_t data_width, unsigned int transfer_count);
+int nu_pdma_mempull(void *dest, void *src, uint32_t data_width, unsigned int transfer_count);
 
 #endif // __DRV_PDMA_H___

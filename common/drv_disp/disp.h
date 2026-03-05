@@ -48,11 +48,11 @@ typedef struct
 
         // For FSA506 EBI/8080 cycle timing
         #define CONFIG_DISPLAY_BOARD_NAME  "LCD43_V1.0, FSA506"
-        #define EBI_8080_ACCESS_NS   45
+        #define EBI_8080_ACCESS_NS   43
         #define EBI_8080_WR_IDLE_NS  40
-        #define EBI_8080_WR_AHD_NS   0
-        #define EBI_8080_RD_AHD_NS   0
-        #define EBI_8080_RD_IDLE_NS  EBI_8080_WR_IDLE_NS
+        #define EBI_8080_WR_AHD_NS   10
+        #define EBI_8080_RD_AHD_NS   10
+        #define EBI_8080_RD_IDLE_NS  30
 
     #elif defined(CONFIG_DISP_NV3041A)
         #define DISP_HOR_RES_MAX          480
@@ -101,7 +101,9 @@ void disp_write_reg(uint16_t reg, uint16_t data);
 void disp_set_column(uint16_t StartCol, uint16_t EndCol);
 void disp_set_page(uint16_t StartPage, uint16_t EndPage);
 void disp_send_pixels(uint16_t *pixels, int byte_len);
+void disp_receive_pixels(uint16_t *pixels, int byte_len);
 void disp_fillrect(uint16_t *pixels, const disp_area_t *area);
+void disp_readrect(uint16_t *pixels, const disp_area_t *area);
 int  disp_init(void);
 
 #endif /* __DISP_H__ */

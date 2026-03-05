@@ -531,9 +531,9 @@ int nu_pdma_channel_memctrl_set(int i32ChannID, nu_pdma_memctrl_t eMemCtrl)
         goto exit_nu_pdma_channel_memctrl_set;
 
     /* PDMA_MEM/SAR_FIX/BURST mode is not supported. */
-    if ((psPdmaChann->m_spPeripCtl.m_u32Peripheral == PDMA_MEM) &&
-            ((eMemCtrl == eMemCtl_SrcFix_DstInc) || (eMemCtrl == eMemCtl_SrcFix_DstFix)))
-        goto exit_nu_pdma_channel_memctrl_set;
+//    if ((psPdmaChann->m_spPeripCtl.m_u32Peripheral == PDMA_MEM) /*&&
+//            ((eMemCtrl == eMemCtl_SrcFix_DstInc) || (eMemCtrl == eMemCtl_SrcFix_DstFix))*/)
+//        goto exit_nu_pdma_channel_memctrl_set;
 
     nu_pdma_chn_arr[i32ChannID - NU_PDMA_CH_Pos].m_spPeripCtl.m_eMemCtl = eMemCtrl;
 
@@ -595,7 +595,6 @@ int nu_pdma_desc_setup(int i32ChannID, nu_pdma_desc_t dma_desc, uint32_t u32Data
     psPeriphCtl = &nu_pdma_chn_arr[i32ChannID - NU_PDMA_CH_Pos].m_spPeripCtl;
 
     nu_pdma_channel_memctrl_fill(psPeriphCtl->m_eMemCtl, &u32SrcCtl, &u32DstCtl);
-
     dma_desc->CTL = ((i32TransferCnt - 1) << PDMA_DSCT_CTL_TXCNT_Pos) |
                     ((u32DataWidth == 8) ? PDMA_WIDTH_8 : (u32DataWidth == 16) ? PDMA_WIDTH_16 : PDMA_WIDTH_32) |
                     u32SrcCtl |
@@ -609,7 +608,16 @@ int nu_pdma_desc_setup(int i32ChannID, nu_pdma_desc_t dma_desc, uint32_t u32Data
     if (psPeriphCtl->m_u32Peripheral == PDMA_MEM)
     {
         /* For M2M transfer */
-        dma_desc->CTL |= (PDMA_REQ_BURST | PDMA_BURST_32);
+        switch ((int)psPeriphCtl->m_eMemCtl)
+        {
+        case eMemCtl_SrcFix_DstFix:
+        case eMemCtl_SrcFix_DstInc:
+            dma_desc->CTL |= (PDMA_REQ_BURST | PDMA_BURST_1);
+            break;
+        default:
+            dma_desc->CTL |= (PDMA_REQ_BURST | PDMA_BURST_32);
+            break;
+        }
     }
     else
     {
@@ -1218,6 +1226,14 @@ int nu_pdma_mempush(void *dest, void *src, uint32_t data_width, unsigned int tra
 {
     if (data_width == 8 || data_width == 16 || data_width == 32)
         return nu_pdma_memfun(dest, src, data_width, transfer_count, eMemCtl_SrcInc_DstFix);
+
+    return 0;
+}
+
+int nu_pdma_mempull(void *dest, void *src, uint32_t data_width, unsigned int transfer_count)
+{
+    if (data_width == 8 || data_width == 16 || data_width == 32)
+        return nu_pdma_memfun(dest, src, data_width, transfer_count, eMemCtl_SrcFix_DstInc);
 
     return 0;
 }

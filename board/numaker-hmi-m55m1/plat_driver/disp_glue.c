@@ -182,6 +182,12 @@ int lcd_device_control(int cmd, void *argv)
     }
     break;
 
+    case evLCD_CTRL_RECT_READ:
+    {
+        disp_readrect((uint16_t *)s_au8FrameBuf, (const disp_area_t *)argv);
+    }
+    break;
+
     default:
         while (1);
     }

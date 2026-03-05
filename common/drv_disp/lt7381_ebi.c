@@ -8,6 +8,30 @@
 
 #include "disp.h"
 
+/*
+  0: Memory Write FIFO is not full.
+  1: Memory Write FIFO is full.
+*/
+#define LT7381_VRAM_WF_ISFULL()    (DISP_READ_STATUS() & BIT7)
+
+/*
+  0: Memory Write FIFO is not empty.
+  1: Memory Write FIFO is empty.
+*/
+#define LT7381_VRAM_WF_ISEMPTY()   (DISP_READ_STATUS() & BIT6)
+
+/*
+  0: Memory Read FIFO is not full.
+  1: Memory Read FIFO is full.
+*/
+#define LT7381_VRAM_RF_ISFULL()    (DISP_READ_STATUS() & BIT5)
+
+/*
+  0: Memory Read FIFO is not empty.
+  1: Memory Read FIFO is empty.
+*/
+#define LT7381_VRAM_RF_ISEMPTY()   (DISP_READ_STATUS() & BIT4)
+
 void disp_write_reg(uint16_t reg, uint16_t data)
 {
     // Register
@@ -37,23 +61,6 @@ void disp_set_page(uint16_t StartPage, uint16_t EndPage)
     disp_write_reg(0x5D, ActiveY >> 8);
 }
 
-/*
-  0: Memory Write FIFO is not full.
-  1: Memory Write FIFO is full.
-*/
-static uint32_t lt7381_vram_fifo_isfull(void)
-{
-    return (DISP_READ_STATUS() & BIT7);
-}
-
-/*
-  0: Memory FIFO is not empty.
-  1: Memory FIFO is empty.
-*/
-static uint32_t lt7381_vram_fifo_isempty(void)
-{
-    return (DISP_READ_STATUS() & BIT6);
-}
 
 void disp_send_pixels(uint16_t *pixels, int byte_len)
 {
@@ -68,6 +75,7 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
     /* Memory Data Read/Write Port */
     DISP_WRITE_REG(0x04);
 
+    //printf("[%s]%02X\n", __func__, DISP_READ_STATUS());
 #if defined(CONFIG_DISP_USE_PDMA)
     // PDMA-M2M feed
     if (count > 512)
@@ -82,11 +90,47 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
         while (i < count)
         {
             /* Check VRAM FIFO is full or not. */
-            while (lt7381_vram_fifo_isfull());
+            while (LT7381_VRAM_WF_ISFULL());
             DISP_WRITE_DATA(pixels[i]);
             i++;
         }
     }
 
-    while (!lt7381_vram_fifo_isempty());
+    while (!LT7381_VRAM_WF_ISEMPTY());
+}
+
+void disp_receive_pixels(uint16_t *pixels, int byte_len)
+{
+    int count = byte_len / sizeof(uint16_t);
+    volatile uint16_t dummy;
+
+    disp_write_reg(0x5F, 0);
+    disp_write_reg(0x60, 0);
+    disp_write_reg(0x61, 0);
+    disp_write_reg(0x62, 0);
+
+    DISP_WRITE_REG(0x04);
+
+    //printf("[%s]%02X\n", __func__, DISP_READ_STATUS());
+
+    /* Must do a dummy read to trigger read task. */
+    dummy = DISP_READ_DATA();
+    while (!LT7381_VRAM_RF_ISFULL());
+
+#if defined(CONFIG_DISP_USE_PDMA)
+    if (count > 512)
+    {
+        nu_pdma_mempull((void *)pixels, (void *)CONFIG_DISP_DAT_ADDR, 16, count);
+    }
+    else
+#endif
+    {
+        int i = 0;
+
+        while (i < count)
+        {
+            pixels[i] = DISP_READ_DATA();
+            i++;
+        }
+    }
 }
