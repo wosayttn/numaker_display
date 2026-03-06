@@ -96,7 +96,7 @@ void demo_lcd_readback(const S_LCD_INFO *psLcdInfo)
     u32AreaPixelCount = disp_area_pixel_count(&sFullRefresh);
     for (i = 0; i < u32AreaPixelCount; i++)
     {
-        pu16Color[i] = 0xF800;
+        pu16Color[i] = (i & 0xFFFF);
     }
     u32CheckSumW = crc32((uint8_t *)pu16Color, u32AreaPixelCount * sizeof(uint16_t));
     lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sFullRefresh);

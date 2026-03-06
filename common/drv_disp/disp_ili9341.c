@@ -149,16 +149,41 @@ void disp_fillrect(uint16_t *pixels, const disp_area_t *area)
     disp_send_pixels(pixels, h * w * sizeof(uint16_t));
 }
 
+typedef union
+{
+    uint32_t rgbx;
+    struct
+    {
+        uint8_t x;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+    } S;
+} ili9341_color;
+
 void disp_readrect(uint16_t *pixels, const disp_area_t *area)
 {
-    printf("[%s] Not supported\n", __func__);
-
-//    TODO
+    printf("Not support\n");
+    //TODO
 //    int32_t w = (int32_t)(area->x2 - area->x1 + 1);
 //    int32_t h = (int32_t)(area->y2 - area->y1 + 1);
+//    int32_t x = (int32_t)(area->x1);
+//    int32_t y = (int32_t)(area->y1);
 
-//    disp_set_column(area->x1, area->x2);
-//    disp_set_page(area->y1, area->y2);
+//    ili9341_color bgrx = {0};
+//	
+//    for (int i=x; i<x+w; i++)
+//	  {
+//       for (int j=y; j<y+h; j++)
+//			 {
+//           disp_set_column(i, i);
+//           disp_set_page(j, j);
 
-//    disp_receive_pixels(pixels, h * w * sizeof(uint16_t));
+//           disp_receive_pixels((uint16_t *)&bgrx, sizeof(bgrx));
+//				 
+//  		     *pixels = ((bgrx.S.r >> 2) << 11) | ((bgrx.S.g >> 2) << 5) | (bgrx.S.b >> 2);
+//				   printf("%08x -> %04x\n", bgrx.rgbx, *pixels);
+//	  	     pixels++;
+//			 }		
+//		}
 }

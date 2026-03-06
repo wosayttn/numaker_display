@@ -33,6 +33,8 @@ void DISP_WRITE_REG(uint8_t u8Cmd)
 
 void DISP_WRITE_DATA(uint8_t u8Dat)
 {
+    SPI_SET_DATA_WIDTH(CONFIG_DISP_SPI, 8);
+	
     nu_spi_transfer(&s_NuSPI, (const void *)&u8Dat, NULL, 1);
 }
 
@@ -62,37 +64,68 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
     nu_spi_transfer(&s_NuSPI, (const void *)pixels, NULL, byte_len);
 }
 
-static void debug_read_id(void)
+int ili9341_spi_send_then_recv(struct nu_spi *psNuSPI, const uint8_t* tx, int tx_len, uint8_t *rx, int rx_len, int dw)
 {
-    uint8_t cmd = 0x04;
-    uint8_t id_data[4];
+    SPI_SET_DATA_WIDTH(psNuSPI->base, dw*8);
 
-    nu_spi_send_then_recv(&s_NuSPI, (const uint8_t *)&cmd, 1, id_data, 4, 1);
-    printf("LCD ID: %02X %02X %02X %02X\n", id_data[0], id_data[1], id_data[2], id_data[3]);
-}
-
-static void disp_receive_pixel(uint16_t *pixel)
-{
-    typedef union
+    if (psNuSPI->ss_pin > 0)
     {
-        uint32_t rgbx;
-        struct
-        {
-            uint8_t x;
-            uint8_t r;
-            uint8_t g;
-            uint8_t b;
-        } S;
-    } ili9341_pixel;
-    ili9341_pixel bgrx;
+        GPIO_PIN_DATA(NU_GET_PORT(psNuSPI->ss_pin), NU_GET_PIN(psNuSPI->ss_pin)) = 0;
+    }
+    else
+    {
+        SPI_SET_SS_LOW(psNuSPI->base);
+    }
 
-    uint8_t cmd = 0x2E;
-    nu_spi_send_then_recv(&s_NuSPI, (const uint8_t *)&cmd, 1, (uint8_t *)&bgrx, sizeof(bgrx), 1);
-    printf("%08x\n", bgrx.rgbx);
+    if (tx)
+    {
+        DISP_CLR_RS;
+        int sent = 0;
+        while (sent < tx_len)
+        {
+            sent += nu_spi_write(psNuSPI->base, tx + sent, dw);
+        }
+        while (SPI_IS_BUSY(psNuSPI->base)); 
+    }
+
+    DISP_SET_RS;
+
+    /* Clear SPI RX FIFO */
+    nu_spi_drain_rxfifo(psNuSPI->base);
+
+    if (rx)
+    {
+        uint32_t dummy_tx = 0xFFFFFFFF;
+        uint8_t *curr_rx = rx;
+        int remaining = rx_len;
+        int received = 0;
+
+        while (received < rx_len)
+        {
+            if (remaining > 0)
+            {
+                int w = nu_spi_write(psNuSPI->base, (uint8_t *)&dummy_tx, dw);
+                remaining -= w;
+            }
+
+            received += nu_spi_read(psNuSPI->base, curr_rx + received, dw);
+        }
+    }
+
+    if (psNuSPI->ss_pin > 0)
+    {
+        GPIO_PIN_DATA(NU_GET_PORT(psNuSPI->ss_pin), NU_GET_PIN(psNuSPI->ss_pin)) = 1;
+    }
+    else
+    {
+        SPI_SET_SS_HIGH(psNuSPI->base);
+    }
+
+    return 0;
 }
 
 void disp_receive_pixels(uint16_t *pixels, int byte_len)
 {
-    //debug_read_id();
-    //disp_receive_pixel(pixels);
+//    uint8_t cmd = 0x2E;
+//    ili9341_spi_send_then_recv(&s_NuSPI, (const uint8_t*)&cmd, 1, (uint8_t *)pixels, 4, 1);
 }

@@ -49,8 +49,6 @@ static void sys_init(void)
     /* Update System Core Clock */
     SystemCoreClockUpdate();
 
-#if defined(USE_NUTFT)
-
     /* SPI2 */
     CLK_EnableModuleClock(SPI2_MODULE);
 
@@ -67,8 +65,6 @@ static void sys_init(void)
 
     /* Disable digital path on these EADC pins */
     GPIO_DISABLE_DIGITAL_PATH(PB, BIT6 | BIT7 | BIT8 | BIT9);
-
-#else
 
     /* Enable EBI module clock */
     CLK_EnableModuleClock(EBI_MODULE);
@@ -107,8 +103,6 @@ static void sys_init(void)
     SYS->GPB_MFP2 |= (SYS_GPB_MFP2_PB11MFP_I2C1_SCL | SYS_GPB_MFP2_PB10MFP_I2C1_SDA);
 
     GPIO_SetPullCtl(PB, BIT11 | BIT10, GPIO_PUSEL_PULL_UP);
-
-#endif
 
     /* Select TIMER clock source */
     CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0SEL_HIRC, 0);
