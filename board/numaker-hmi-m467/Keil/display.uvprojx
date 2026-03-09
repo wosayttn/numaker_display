@@ -500,6 +500,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\spi.c</FilePath>
             </File>
+            <File>
+              <FileName>i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>eadc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\eadc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -514,6 +524,21 @@
               <FileName>disp_glue.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\plat_driver\disp_glue.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>touch</GroupName>
+          <Files>
+            <File>
+              <FileName>touch_glue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\plat_driver\touch_glue.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_glue.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\plat_driver\touch_glue.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -549,6 +574,11 @@
               <FileName>drv_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\plat_driver\drv_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>plat_touch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\plat_touch.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -634,6 +664,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\common\drv_disp\fsa506_ebi.c</FilePath>
             </File>
+            <File>
+              <FileName>touch_st1663i.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_st1663i.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -648,6 +683,11 @@
               <FileName>nv3041a_ebi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\common\drv_disp\nv3041a_ebi.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_gt911.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_gt911.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -732,6 +772,16 @@
               <FileName>ili9341_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\common\drv_disp\ili9341_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_adc_calibration.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_adc_calibration.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1231,6 +1281,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\spi.c</FilePath>
             </File>
+            <File>
+              <FileName>i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>eadc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\eadc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1245,6 +1305,21 @@
               <FileName>disp_glue.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\plat_driver\disp_glue.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>touch</GroupName>
+          <Files>
+            <File>
+              <FileName>touch_glue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\plat_driver\touch_glue.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_glue.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\plat_driver\touch_glue.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1281,6 +1356,11 @@
               <FileType>1</FileType>
               <FilePath>..\plat_driver\drv_spi.c</FilePath>
             </File>
+            <File>
+              <FileName>plat_touch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\plat_touch.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1295,6 +1375,11 @@
               <FileName>fsa506_ebi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\common\drv_disp\fsa506_ebi.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_st1663i.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_st1663i.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1380,6 +1465,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\common\drv_disp\nv3041a_ebi.c</FilePath>
             </File>
+            <File>
+              <FileName>touch_gt911.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_gt911.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1463,6 +1553,16 @@
               <FileName>ili9341_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\common\drv_disp\ili9341_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_adc_calibration.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_adc_calibration.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1962,6 +2062,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\spi.c</FilePath>
             </File>
+            <File>
+              <FileName>i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>eadc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m460\Library\StdDriver\src\eadc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1976,6 +2086,21 @@
               <FileName>disp_glue.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\plat_driver\disp_glue.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>touch</GroupName>
+          <Files>
+            <File>
+              <FileName>touch_glue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\plat_driver\touch_glue.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_glue.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\plat_driver\touch_glue.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -2011,6 +2136,11 @@
               <FileName>drv_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\plat_driver\drv_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>plat_touch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\plat_touch.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2096,6 +2226,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\common\drv_disp\fsa506_ebi.c</FilePath>
             </File>
+            <File>
+              <FileName>touch_st1663i.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_st1663i.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2180,6 +2315,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\common\drv_disp\nv3041a_ebi.c</FilePath>
             </File>
+            <File>
+              <FileName>touch_gt911.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_gt911.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2194,6 +2334,16 @@
               <FileName>ili9341_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\common\drv_disp\ili9341_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_adc_calibration.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\drv_indev\touch_adc_calibration.c</FilePath>
             </File>
           </Files>
         </Group>

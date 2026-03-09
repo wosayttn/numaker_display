@@ -6,7 +6,7 @@
  * @copyright (C) 2025 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
-#include "disp.h"
+#include "numaker_disp.h"
 
 void disp_write_reg(uint16_t reg, uint16_t data)
 {

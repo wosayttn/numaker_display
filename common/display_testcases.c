@@ -8,7 +8,8 @@
 
 #include <stdint.h>
 #include "NuMicro.h"
-#include "disp.h"
+#include "numaker_disp.h"
+#include "numaker_touch.h"
 #include "sw_crc.h"
 #include "perf_ev.h"
 
@@ -132,5 +133,17 @@ void demo_lcd_readback(const S_LCD_INFO *psLcdInfo)
                 printf("[%d] %04X != %04X\n", i, (i & 0xFFFF), pu16Color[i]);
             }
         }
+    }
+}
+
+void demo_touchpad_getpoint(void)
+{
+    static numaker_indev_data_t s_data = {0};
+    int count = 0;
+
+    while (count++ < 3000)
+    {
+        touchpad_device_read(&s_data);
+        printf("X(%d) Y(%d), State(%d)\n", s_data.point.x, s_data.point.y, s_data.state);
     }
 }

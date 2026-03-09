@@ -6,7 +6,7 @@
  * @copyright (C) 2024 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
-#include "disp.h"
+#include "numaker_disp.h"
 
 void disp_set_column(uint16_t StartCol, uint16_t EndCol)
 {

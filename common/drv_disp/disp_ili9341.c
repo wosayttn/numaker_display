@@ -6,7 +6,7 @@
  * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
-#include "disp.h"
+#include "numaker_disp.h"
 
 int disp_init(void)
 {
@@ -155,9 +155,9 @@ typedef union
     struct
     {
         uint8_t x;
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
+        uint8_t r;
+        uint8_t g;
+        uint8_t b;
     } S;
 } ili9341_color;
 
@@ -171,19 +171,19 @@ void disp_readrect(uint16_t *pixels, const disp_area_t *area)
 //    int32_t y = (int32_t)(area->y1);
 
 //    ili9341_color bgrx = {0};
-//	
+//
 //    for (int i=x; i<x+w; i++)
-//	  {
+//    {
 //       for (int j=y; j<y+h; j++)
-//			 {
+//           {
 //           disp_set_column(i, i);
 //           disp_set_page(j, j);
 
 //           disp_receive_pixels((uint16_t *)&bgrx, sizeof(bgrx));
-//				 
-//  		     *pixels = ((bgrx.S.r >> 2) << 11) | ((bgrx.S.g >> 2) << 5) | (bgrx.S.b >> 2);
-//				   printf("%08x -> %04x\n", bgrx.rgbx, *pixels);
-//	  	     pixels++;
-//			 }		
-//		}
+//
+//               *pixels = ((bgrx.S.r >> 2) << 11) | ((bgrx.S.g >> 2) << 5) | (bgrx.S.b >> 2);
+//                 printf("%08x -> %04x\n", bgrx.rgbx, *pixels);
+//           pixels++;
+//           }
+//      }
 }

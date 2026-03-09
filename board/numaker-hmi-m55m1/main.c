@@ -55,6 +55,12 @@ static void sys_init(void)
     /* Enable TIMER module clock */
     CLK_EnableModuleClock(TMR0_MODULE);
 
+    /* EADC Analog Pin */
+    CLK_EnableModuleClock(EADC0_MODULE);
+
+    /* Select EADC peripheral clock source. */
+    CLK_SetModuleClock(EADC0_MODULE, CLK_EADCSEL_EADC0SEL_PCLK0, CLK_EADCDIV_EADC0DIV(8));
+
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init I/O Multi-function                                                                                 */
     /*---------------------------------------------------------------------------------------------------------*/
@@ -95,6 +101,14 @@ static void sys_init(void)
     GPIO_SetSlewCtl(PJ, (BIT8 | BIT9), GPIO_SLEWCTL_HIGH);
     GPIO_SetSlewCtl(PD, BIT14, GPIO_SLEWCTL_HIGH);
 
+    SYS->GPB_MFP1 &= ~(SYS_GPB_MFP1_PB7MFP_Msk | SYS_GPB_MFP1_PB6MFP_Msk);
+    SYS->GPB_MFP1 |= (SYS_GPB_MFP1_PB7MFP_EADC0_CH7 | SYS_GPB_MFP1_PB6MFP_EADC0_CH6);
+    SYS->GPB_MFP2 &= ~(SYS_GPB_MFP2_PB9MFP_Msk | SYS_GPB_MFP2_PB8MFP_Msk);
+    SYS->GPB_MFP2 |= (SYS_GPB_MFP2_PB9MFP_EADC0_CH9 | SYS_GPB_MFP2_PB8MFP_EADC0_CH8);
+
+    /* Disable digital path on these EADC pins */
+    GPIO_DISABLE_DIGITAL_PATH(PB, BIT6 | BIT7 | BIT8 | BIT9);
+
     SetDebugUartMFP();
 
     InitDebugUart();
@@ -120,10 +134,14 @@ int main(void)
 
     lcd_device_open();
 
+    touchpad_device_initialize();
+    touchpad_device_open();
+
     while (1)
     {
         demo_lcd_flush(&sLcdInfo);
-        //demo_lcd_readback(&sLcdInfo);
+        demo_touchpad_getpoint();
+        demo_lcd_readback(&sLcdInfo);
     }
 
     lcd_device_close();

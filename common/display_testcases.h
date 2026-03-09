@@ -9,11 +9,13 @@
 #ifndef __DISPLAY_TESTCASES_H__
 #define __DISPLAY_TESTCASES_H__
 
-#include "disp.h"
+#include "numaker_disp.h"
+#include "numaker_touch.h"
 
 uint32_t crc32(uint8_t *ptr, uint32_t len);
 
 void demo_lcd_flush(const S_LCD_INFO *psLcdInfo);
 void demo_lcd_readback(const S_LCD_INFO *psLcdInfo);
+void demo_touchpad_getpoint(void);
 
 #endif //__DISPLAY_TESTCASES_H__

@@ -9,6 +9,11 @@
 #include <stdint.h>
 #include <math.h>
 #include "disp.h"
+#if defined(__FREERTOS__)
+    #include "FreeRTOS.h"
+    #include "task.h"
+    #include "semphr.h"
+#endif
 
 static uint8_t s_au8FrameBuf[CONFIG_VRAM_TOTAL_ALLOCATED_SIZE] __attribute__((aligned(DCACHE_LINE_SIZE)));
 

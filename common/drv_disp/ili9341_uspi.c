@@ -6,7 +6,7 @@
  * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
-#include "disp.h"
+#include "numaker_disp.h"
 #include "drv_uspi.h"
 
 static struct nu_uspi s_NuUSPI =

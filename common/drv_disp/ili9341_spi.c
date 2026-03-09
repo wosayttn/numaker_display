@@ -6,7 +6,7 @@
  * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
-#include "disp.h"
+#include "numaker_disp.h"
 #include "drv_spi.h"
 
 static struct nu_spi s_NuSPI =
@@ -34,7 +34,7 @@ void DISP_WRITE_REG(uint8_t u8Cmd)
 void DISP_WRITE_DATA(uint8_t u8Dat)
 {
     SPI_SET_DATA_WIDTH(CONFIG_DISP_SPI, 8);
-	
+
     nu_spi_transfer(&s_NuSPI, (const void *)&u8Dat, NULL, 1);
 }
 
@@ -64,9 +64,9 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
     nu_spi_transfer(&s_NuSPI, (const void *)pixels, NULL, byte_len);
 }
 
-int ili9341_spi_send_then_recv(struct nu_spi *psNuSPI, const uint8_t* tx, int tx_len, uint8_t *rx, int rx_len, int dw)
+int ili9341_spi_send_then_recv(struct nu_spi *psNuSPI, const uint8_t *tx, int tx_len, uint8_t *rx, int rx_len, int dw)
 {
-    SPI_SET_DATA_WIDTH(psNuSPI->base, dw*8);
+    SPI_SET_DATA_WIDTH(psNuSPI->base, dw * 8);
 
     if (psNuSPI->ss_pin > 0)
     {
@@ -85,7 +85,7 @@ int ili9341_spi_send_then_recv(struct nu_spi *psNuSPI, const uint8_t* tx, int tx
         {
             sent += nu_spi_write(psNuSPI->base, tx + sent, dw);
         }
-        while (SPI_IS_BUSY(psNuSPI->base)); 
+        while (SPI_IS_BUSY(psNuSPI->base));
     }
 
     DISP_SET_RS;

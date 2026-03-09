@@ -1,5 +1,5 @@
 /**************************************************************************//**
- * @file     disp.h
+ * @file     numaker_disp.h
  * @brief    for display driver
  *
  * SPDX-License-Identifier: Apache-2.0

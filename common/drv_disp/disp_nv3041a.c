@@ -6,7 +6,7 @@
  * @copyright (C) 2025 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
-#include "disp.h"
+#include "numaker_disp.h"
 
 #define DISP_HOR_RES_MAX      480
 #define DISP_VER_RES_MAX      272

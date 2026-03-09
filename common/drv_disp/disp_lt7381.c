@@ -6,7 +6,7 @@
  * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
-#include "disp.h"
+#include "numaker_disp.h"
 
 #define LCD_VBPD        20
 #define LCD_VFPD        12
