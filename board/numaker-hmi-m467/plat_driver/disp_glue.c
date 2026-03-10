@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 #include <math.h>
-#include "disp.h"
+#include "numaker_disp.h"
 
 static uint8_t s_au8FrameBuf[CONFIG_VRAM_TOTAL_ALLOCATED_SIZE] __attribute__((aligned(4)));
 

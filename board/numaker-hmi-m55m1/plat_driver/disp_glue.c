@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 #include <math.h>
-#include "disp.h"
+#include "numaker_disp.h"
 #if defined(__FREERTOS__)
     #include "FreeRTOS.h"
     #include "task.h"
