@@ -140,7 +140,7 @@ int main(void)
     while (1)
     {
         demo_lcd_flush(&sLcdInfo);
-        demo_touchpad_getpoint();
+        //demo_touchpad_getpoint();
         demo_lcd_readback(&sLcdInfo);
     }
 

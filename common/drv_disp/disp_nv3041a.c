@@ -156,5 +156,13 @@ void disp_fillrect(uint16_t *pixels, const disp_area_t *area)
 
 void disp_readrect(uint16_t *pixels, const disp_area_t *area)
 {
-    printf("[%s] Not supported\n", __func__);
+    uint16_t u16SysID[2] = {0};
+
+    DISP_WRITE_REG(0x4);
+    u16SysID[0] = DISP_READ_DATA();
+    DISP_READ_DATA();
+    u16SysID[1] = DISP_READ_DATA();
+    DISP_READ_DATA();
+
+    printf("[%s]SysID: %02X%02X -- Not supported\n", __func__, u16SysID[0], u16SysID[1]);
 }

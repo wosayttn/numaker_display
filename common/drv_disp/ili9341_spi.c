@@ -64,7 +64,7 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
     nu_spi_transfer(&s_NuSPI, (const void *)pixels, NULL, byte_len);
 }
 
-int ili9341_spi_send_then_recv(struct nu_spi *psNuSPI, const uint8_t *tx, int tx_len, uint8_t *rx, int rx_len, int dw)
+static int ili9341_spi_send_then_recv(struct nu_spi *psNuSPI, const uint8_t *tx, int tx_len, uint8_t *rx, int rx_len, int dw)
 {
     SPI_SET_DATA_WIDTH(psNuSPI->base, dw * 8);
 
@@ -124,8 +124,57 @@ int ili9341_spi_send_then_recv(struct nu_spi *psNuSPI, const uint8_t *tx, int tx
     return 0;
 }
 
+typedef union
+{
+    uint32_t rgbx;
+    struct
+    {
+        uint8_t x;
+        uint8_t r;
+        uint8_t g;
+        uint8_t b;
+    } S;
+} ili9341_color;
+
+
+static disp_area_t s_receive_area = {0};
+void disp_ili9341_set_area(const disp_area_t *area)
+{
+    s_receive_area = *area;
+}
+
 void disp_receive_pixels(uint16_t *pixels, int byte_len)
 {
-//    uint8_t cmd = 0x2E;
-//    ili9341_spi_send_then_recv(&s_NuSPI, (const uint8_t*)&cmd, 1, (uint8_t *)pixels, 4, 1);
+    uint8_t cmd = 0x2E;
+
+    int32_t w = (int32_t)(s_receive_area.x2 - s_receive_area.x1 + 1);
+    int32_t h = (int32_t)(s_receive_area.y2 - s_receive_area.y1 + 1);
+    int32_t x = (int32_t)(s_receive_area.x1);
+    int32_t y = (int32_t)(s_receive_area.y1);
+
+    disp_set_column(s_receive_area.x1, s_receive_area.x2);
+    disp_set_page(s_receive_area.y1, s_receive_area.y2);
+
+    // Slow down SPI clock frequency when reading.
+    SPI_SetBusClock(s_NuSPI.base, CONFIG_DISP_SPI_CLOCK / 2);
+
+    for (int j = y; j < y + h; j++)
+    {
+        for (int i = x; i < x + w; i++)
+        {
+            ili9341_color bgrx = {0};
+
+            disp_set_column(i, i);
+            disp_set_page(j, j);
+            ili9341_spi_send_then_recv(&s_NuSPI, &cmd, 1, (void *)&bgrx, sizeof(bgrx), 1);
+
+            *pixels = ((bgrx.S.r >> 3) << 11) | ((bgrx.S.g >> 2) << 5) | (bgrx.S.b >> 3);
+            pixels++;
+            //printf("x:%02x r:%02x g:%02x b:%02x\n", bgrx.S.x, bgrx.S.r, bgrx.S.g, bgrx.S.b);
+            //printf("[%d] %08x -> %04x\n", i, bgrx.rgbx, pixels[i]);
+        }
+    }
+
+    // Reset SPI clock frequency to default.
+    SPI_SetBusClock(s_NuSPI.base, CONFIG_DISP_SPI_CLOCK);
 }

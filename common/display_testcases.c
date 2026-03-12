@@ -109,16 +109,13 @@ void demo_lcd_readback(const S_LCD_INFO *psLcdInfo)
 
 #if (NVT_DCACHE_ON == 1)
     SCB_CleanDCache_by_Addr((volatile void *)pu16Color, (int32_t)u32AreaPixelCount);
+    SCB_InvalidateDCache_by_Addr((volatile void *)pu16Color, (int32_t)u32AreaPixelCount);
 #endif
 
     start = GetSysTickCycleCount();
     lcd_device_control(evLCD_CTRL_RECT_READ, (void *)&sFullRefresh);
     elapsed = GetSysTickCycleCount() - start;
     printf("[%s] Read %d pixels, elpased %.2fms.\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
-
-#if (NVT_DCACHE_ON == 1)
-    SCB_InvalidateDCache_by_Addr((volatile void *)pu16Color, (int32_t)u32AreaPixelCount);
-#endif
 
     u32CheckSumR = crc32((uint8_t *)pu16Color, u32AreaPixelCount * sizeof(uint16_t));
     printf("W(%08X) R(%08X)\n", u32CheckSumW, u32CheckSumR);
