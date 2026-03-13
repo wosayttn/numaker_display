@@ -51,32 +51,38 @@ void demo_lcd_flush(const S_LCD_INFO *psLcdInfo)
 
         /* Render to shadow buffer */
         u32AreaPixelCount = disp_area_pixel_count(&sFullRefresh);
-        for (int i = 0; i < u32AreaPixelCount; i++)
+        if (CONFIG_VRAM_TOTAL_ALLOCATED_SIZE >= (u32AreaPixelCount * psLcdInfo->u32BytePerPixel))
         {
-            pu16Color[i] = color[c];
-        }
+            for (int i = 0; i < u32AreaPixelCount; i++)
+            {
+                pu16Color[i] = color[c];
+            }
 
-        /* Flush to VRAM on LCD panel */
-        start = GetSysTickCycleCount();
-        lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sFullRefresh);
-        elapsed = GetSysTickCycleCount() - start;
-        printf("[%s] FullRefresh flush %d pixels, elpased %.2fms.\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+            /* Flush to VRAM on LCD panel */
+            start = GetSysTickCycleCount();
+            lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sFullRefresh);
+            elapsed = GetSysTickCycleCount() - start;
+            printf("\033[32m[%s] FullRefresh flush %d pixels, elpased %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+        }
 
         /* Render to shadow buffer */
         u32AreaPixelCount = disp_area_pixel_count(&sPartialUpdate);
-        for (int i = 0; i < u32AreaPixelCount; i++)
+        if (CONFIG_VRAM_TOTAL_ALLOCATED_SIZE >= (u32AreaPixelCount * psLcdInfo->u32BytePerPixel))
         {
-            pu16Color[i] = color[(c + 1) % 3];
+            for (int i = 0; i < u32AreaPixelCount; i++)
+            {
+                pu16Color[i] = color[(c + 1) % 3];
+            }
+
+            /* Flush to VRAM on LCD panel */
+            start = GetSysTickCycleCount();
+            lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sPartialUpdate);
+            elapsed = GetSysTickCycleCount() - start;
+            printf("\033[32m[%s] PartialUpdate flush %d pixels, elpased %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+
+            /* Optional: delay to see color */
+            TIMER_Delay(TIMER0, 500000);
         }
-
-        /* Flush to VRAM on LCD panel */
-        start = GetSysTickCycleCount();
-        lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sPartialUpdate);
-        elapsed = GetSysTickCycleCount() - start;
-        printf("[%s] PartialUpdate flush %d pixels, elpased %.2fms. \n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
-
-        /* Optional: delay to see color */
-        TIMER_Delay(TIMER0, 1000000);
     }
 }
 
@@ -84,10 +90,19 @@ void demo_lcd_readback(const S_LCD_INFO *psLcdInfo)
 {
     int i;
     uint64_t start, elapsed;
+
+    disp_area_t *area;
+
     disp_area_t sFullRefresh = {0, 0,
                                 DISP_HOR_RES_MAX - 1,
                                 DISP_VER_RES_MAX - 1
                                };
+
+    disp_area_t sPartialUpdate = { DISP_HOR_RES_MAX / 4,
+                                   DISP_VER_RES_MAX / 4,
+                                   (DISP_HOR_RES_MAX / 2 + DISP_HOR_RES_MAX / 4) - 1,
+                                   (DISP_VER_RES_MAX / 2 + DISP_VER_RES_MAX / 4) - 1
+                                 };
 
     uint16_t *pu16Color = (uint16_t *)psLcdInfo->pvVramStartAddr;
     uint32_t u32AreaPixelCount;
@@ -95,12 +110,25 @@ void demo_lcd_readback(const S_LCD_INFO *psLcdInfo)
 
     /* Render to shadow buffer */
     u32AreaPixelCount = disp_area_pixel_count(&sFullRefresh);
+    if (CONFIG_VRAM_TOTAL_ALLOCATED_SIZE >= (u32AreaPixelCount * psLcdInfo->u32BytePerPixel))
+    {
+        area = &sFullRefresh;
+    }
+    else
+    {
+        u32AreaPixelCount = disp_area_pixel_count(&sPartialUpdate);
+        area = &sPartialUpdate;
+    }
+
     for (i = 0; i < u32AreaPixelCount; i++)
     {
         pu16Color[i] = (i & 0xFFFF);
+        //pu16Color[i] = (0xF800 & 0xFFFF);
+        //pu16Color[i] = (0x07E0 & 0xFFFF);
+        //pu16Color[i] = (0x001F & 0xFFFF);
     }
     u32CheckSumW = crc32((uint8_t *)pu16Color, u32AreaPixelCount * sizeof(uint16_t));
-    lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sFullRefresh);
+    lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)area);
 
     for (i = 0; i < u32AreaPixelCount; i++)
     {
@@ -113,16 +141,14 @@ void demo_lcd_readback(const S_LCD_INFO *psLcdInfo)
 #endif
 
     start = GetSysTickCycleCount();
-    lcd_device_control(evLCD_CTRL_RECT_READ, (void *)&sFullRefresh);
+    lcd_device_control(evLCD_CTRL_RECT_READ, (void *)area);
     elapsed = GetSysTickCycleCount() - start;
-    printf("[%s] Read %d pixels, elpased %.2fms.\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+    printf("\033[33m[%s] Read %d pixels, elpased %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
 
     u32CheckSumR = crc32((uint8_t *)pu16Color, u32AreaPixelCount * sizeof(uint16_t));
-    printf("W(%08X) R(%08X)\n", u32CheckSumW, u32CheckSumR);
-
     if (u32CheckSumW != u32CheckSumR)
     {
-        printf("W != R (%08X != %08X)\n", u32CheckSumW, u32CheckSumR);
+        printf("\033[31mW != R (%08X != %08X)\033[0m\n", u32CheckSumW, u32CheckSumR);
         for (int i = 0; i < 16 ; i++)
         {
             if (pu16Color[i] != (i & 0xFFFF))
@@ -130,6 +156,10 @@ void demo_lcd_readback(const S_LCD_INFO *psLcdInfo)
                 printf("[%d] %04X != %04X\n", i, (i & 0xFFFF), pu16Color[i]);
             }
         }
+    }
+    else
+    {
+        printf("\033[34mW == R (%08X = %08X)\033[0m\n", u32CheckSumW, u32CheckSumR);
     }
 }
 

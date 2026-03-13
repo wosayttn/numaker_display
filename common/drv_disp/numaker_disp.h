@@ -36,7 +36,7 @@ typedef struct
         // For LT7381 EBI/8080 cycle timing
         #define CONFIG_DISPLAY_BOARD_NAME  "LCD5_V1.2 , LT7381"
         #define EBI_8080_ACCESS_NS   40
-        #define EBI_8080_WR_IDLE_NS  20
+        #define EBI_8080_WR_IDLE_NS  0
         #define EBI_8080_WR_AHD_NS   5
         #define EBI_8080_RD_AHD_NS   5
         #define EBI_8080_RD_IDLE_NS  EBI_8080_WR_IDLE_NS
@@ -49,10 +49,10 @@ typedef struct
         // For FSA506 EBI/8080 cycle timing
         #define CONFIG_DISPLAY_BOARD_NAME  "LCD43_V1.0, FSA506"
         #define EBI_8080_ACCESS_NS   43
-        #define EBI_8080_WR_IDLE_NS  40
-        #define EBI_8080_WR_AHD_NS   10
-        #define EBI_8080_RD_AHD_NS   10
-        #define EBI_8080_RD_IDLE_NS  30
+        #define EBI_8080_WR_IDLE_NS  35
+        #define EBI_8080_WR_AHD_NS   13
+        #define EBI_8080_RD_AHD_NS   13
+        #define EBI_8080_RD_IDLE_NS  0
 
     #elif defined(CONFIG_DISP_NV3041A)
         #define DISP_HOR_RES_MAX          480
@@ -65,6 +65,19 @@ typedef struct
         #define EBI_8080_WR_IDLE_NS  20
         #define EBI_8080_WR_AHD_NS   20
         #define EBI_8080_RD_AHD_NS   20
+        #define EBI_8080_RD_IDLE_NS  EBI_8080_WR_IDLE_NS
+
+    #elif defined(CONFIG_DISP_ILI9341)
+        #define DISP_HOR_RES_MAX          320
+        #define DISP_VER_RES_MAX          240
+        #define DISP_COLOR_DEPTH           16
+
+        // For ILI9341 cycle timing
+        #define CONFIG_DISPLAY_BOARD_NAME  "M487 Advance, ILI9341"
+        #define EBI_8080_ACCESS_NS   35
+        #define EBI_8080_WR_IDLE_NS  0
+        #define EBI_8080_WR_AHD_NS   10
+        #define EBI_8080_RD_AHD_NS   10
         #define EBI_8080_RD_IDLE_NS  EBI_8080_WR_IDLE_NS
 
     #else
@@ -92,8 +105,14 @@ typedef struct
     void DISP_WRITE_DATA(uint8_t u8Dat);
 #endif
 
-#define CONFIG_VRAM_BUFFER_NUM              1
-#define CONFIG_VRAM_TOTAL_ALLOCATED_SIZE    (CONFIG_VRAM_BUFFER_NUM * DISP_HOR_RES_MAX * DISP_VER_RES_MAX * (DISP_COLOR_DEPTH/8))
+
+#if !defined(CONFIG_VRAM_BUFFER_NUM)
+    #define CONFIG_VRAM_BUFFER_NUM              1
+#endif
+
+#if !defined(CONFIG_VRAM_TOTAL_ALLOCATED_SIZE)
+    #define CONFIG_VRAM_TOTAL_ALLOCATED_SIZE    (CONFIG_VRAM_BUFFER_NUM * DISP_HOR_RES_MAX * DISP_VER_RES_MAX * (DISP_COLOR_DEPTH/8))
+#endif
 
 #define disp_delay_ms(ms)            sysDelay(ms)
 

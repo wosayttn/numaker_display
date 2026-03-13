@@ -75,7 +75,6 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
     /* Memory Data Read/Write Port */
     DISP_WRITE_REG(0x04);
 
-    //printf("[%s]%02X\n", __func__, DISP_READ_STATUS());
 #if defined(CONFIG_DISP_USE_PDMA)
     // PDMA-M2M feed
     if (count > 512)
@@ -111,11 +110,11 @@ void disp_receive_pixels(uint16_t *pixels, int byte_len)
 
     DISP_WRITE_REG(0x04);
 
-    //printf("[%s]%02X\n", __func__, DISP_READ_STATUS());
-
     /* Must do a dummy read to trigger read task. */
     dummy = DISP_READ_DATA();
-    while (!LT7381_VRAM_RF_ISFULL());
+    while (!LT7381_VRAM_RF_ISFULL())
+    {
+    };
 
 #if defined(CONFIG_DISP_USE_PDMA)
     if (count > 512)
@@ -130,6 +129,8 @@ void disp_receive_pixels(uint16_t *pixels, int byte_len)
         while (i < count)
         {
             pixels[i] = DISP_READ_DATA();
+            __DSB();
+
             i++;
         }
     }

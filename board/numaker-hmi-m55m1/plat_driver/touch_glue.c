@@ -9,7 +9,11 @@
 #include <stdint.h>
 #include "numaker_touch.h"
 #include "touch_adc.h"
-
+#if defined(__FREERTOS__)
+    #include "FreeRTOS.h"
+    #include "task.h"
+    #include "semphr.h"
+#endif
 
 #if defined(CONFIG_INDEV_TOUCH_I2C)
 
@@ -310,13 +314,6 @@ void touchpad_device_close(void)
 
 int touchpad_device_finalize(void)
 {
-    return 0;
-}
-
-int32_t touch_plat_i2c_init(S_TOUCH_IF_I2C *psIfCtx)
-{
-    I2C_Open((I2C_T *)psIfCtx->m_pvI2C, 400000);
-
     return 0;
 }
 

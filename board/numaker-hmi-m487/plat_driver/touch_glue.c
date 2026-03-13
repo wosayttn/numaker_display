@@ -199,7 +199,7 @@ void touch_plat_i2c_fini(S_TOUCH_IF_I2C *psIfCtx)
 #elif defined(CONFIG_INDEV_TOUCH_AD)
 
 #if defined(CONFIG_DISP_ILI9341) && (CONFIG_DISP_ILI9341==1)
-S_CALIBRATION_MATRIX g_sCalMat = { -105, 6354, -3362552, 5086, -24, -2489744, 65536 };
+S_CALIBRATION_MATRIX g_sCalMat = { 9, 6484, -4280144, -5183, -113, 19125360, 65536 };
 #endif
 
 uint32_t nu_adc_sampling(uint32_t channel)
