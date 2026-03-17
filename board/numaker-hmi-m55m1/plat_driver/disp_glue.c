@@ -7,7 +7,6 @@
  *****************************************************************************/
 
 #include <stdint.h>
-#include <math.h>
 #include "numaker_disp.h"
 #if defined(__FREERTOS__)
     #include "FreeRTOS.h"
@@ -26,76 +25,40 @@ void sysDelay(uint32_t ms)
 #endif
 }
 
-static uint32_t ns_to_cycles_ceil(double ns, double clk_hz)
-{
-    if (ns <= 0.0 || clk_hz <= 0.0)
-        return 0;
-
-    /* ceil(ns * clk_hz / 1e9) */
-    double cycles = (ns * clk_hz) / 1e9;
-    return (uint32_t)ceil(cycles);
-}
-
-static uint32_t hz_to_ns_ceil(double hz)
-{
-    if (hz <= 0.0)
-        return 0;
-
-    /* ceil(1e9 / hz) */
-    double ns = 1e9 / hz;
-    return (uint32_t)ceil(ns);
-}
-
-static double ns_to_cycles(double ns, double clk_hz)
-{
-    if (ns <= 0.0 || clk_hz <= 0.0)
-        return 0;
-
-    return (ns * clk_hz) / 1e9;
-}
-
-static double hz_to_ns(double hz)
-{
-    if (hz <= 0.0)
-        return 0;
-
-    return 1e9 / hz;;
-}
-
 #if defined(CONFIG_DISP_EBI)
 
-static void EBI_OptimizeTiming(void)
+int EBI_ApplyTiming(int acc_ns,
+                    int wr_idle_ns, int wr_ahd_ns,
+                    int rd_ahd_ns, int rd_idle_ns)
 {
 #define TAHD_MAX(a, b)   ((a) > (b) ? (a) : (b))
 #define TASU_CYCLE       (1)
 
-    for (int i32MCLKDiv = EBI_MCLKDIV_1; i32MCLKDiv <= EBI_MCLKDIV_128; i32MCLKDiv++)
+    // Try from fastest MCLK (Div 0) to slowest
+    for (int i32MCLKDiv = EBI_MCLKDIV_1; i32MCLKDiv <= EBI_MCLKDIV_8; i32MCLKDiv++)
     {
+
         double fEBI_MCLK_hz = (double)CLK_GetHCLK0Freq() / (i32MCLKDiv + 1);
 
-        /* Convert to cycles */
-        uint32_t TACC = ns_to_cycles_ceil(EBI_8080_ACCESS_NS,  fEBI_MCLK_hz) - TASU_CYCLE;
-        uint32_t W2X  = ns_to_cycles_ceil(EBI_8080_WR_IDLE_NS, fEBI_MCLK_hz);
-        uint32_t TAHD = ns_to_cycles_ceil(TAHD_MAX(EBI_8080_WR_AHD_NS, EBI_8080_RD_AHD_NS),  fEBI_MCLK_hz);
-        uint32_t R2R  = ns_to_cycles_ceil(EBI_8080_RD_IDLE_NS, fEBI_MCLK_hz);
+        uint32_t TACC = ns_to_cycles_ceil(acc_ns,     fEBI_MCLK_hz) - TASU_CYCLE;
+        uint32_t W2X  = ns_to_cycles_ceil(wr_idle_ns, fEBI_MCLK_hz);
+        uint32_t TAHD = ns_to_cycles_ceil(TAHD_MAX(wr_ahd_ns, rd_ahd_ns), fEBI_MCLK_hz);
+        uint32_t R2R  = ns_to_cycles_ceil(rd_idle_ns, fEBI_MCLK_hz);
 
         printf("EBI_MCLK_hz: %f\n", fEBI_MCLK_hz);
         printf("EBI_MCLK_ns: %f\n", hz_to_ns(fEBI_MCLK_hz));
-        printf("EBI_8080_ACCESS_NS: %d ns\n", EBI_8080_ACCESS_NS);
-        printf("EBI_8080_WR_IDLE_NS: %d ns\n", EBI_8080_WR_IDLE_NS);
-        printf("EBI_8080_WR_AHD_NS: %d ns\n", EBI_8080_WR_AHD_NS);
-        printf("EBI_8080_RD_AHD_NS: %d ns\n", EBI_8080_RD_AHD_NS);
-        printf("EBI_8080_RD_IDLE_NS: %d ns\n", EBI_8080_RD_IDLE_NS);
+        printf("acc_ns: %d ns\n", acc_ns);
+        printf("wr_idle_ns: %d ns\n", wr_idle_ns);
+        printf("wr_ahd_ns: %d ns\n", wr_ahd_ns);
+        printf("rd_ahd_ns: %d ns\n", rd_ahd_ns);
+        printf("rd_idle_ns: %d ns\n", rd_idle_ns);
         printf("Calculated: TACC:%d, W2X:%d, TAHD:%d, R2R:%d\n", TACC, W2X, TAHD, R2R);
 
-        /* Hardware register limitation */
-        if ((TACC > 31) || (W2X  > 15) || (TAHD > 7) || (R2R  > 15))
-        {
-            continue;
-        }
+        // Hardware register range check
+        if ((TACC > 31) || (W2X > 15) || (TAHD > 7) || (R2R > 15)) continue;
 
-        uint32_t WAHDOFF = (EBI_8080_WR_AHD_NS == 0) ? 1 : 0;
-        uint32_t RAHDOFF = (EBI_8080_RD_AHD_NS == 0) ? 1 : 0;
+        uint32_t WAHDOFF = (wr_ahd_ns == 0) ? 1 : 0;
+        uint32_t RAHDOFF = (rd_ahd_ns == 0) ? 1 : 0;
 
         EBI_SetBusTiming(CONFIG_DISP_EBI,
                          (RAHDOFF << EBI_TCTL_RAHDOFF_Pos) |
@@ -110,11 +73,12 @@ static void EBI_OptimizeTiming(void)
         printf("Verify EBI->CTL0: 0x%08X\n", EBI->CTL0);
         printf("Verify EBI->TCTL0: 0x%08X\n", EBI->TCTL0);
 
-        return;
+        return 0;
     }
 
-    printf("Failed to found avaialbe 8080 timing parameter for this panel.\n");
+    return -1;
 }
+
 #endif
 
 int lcd_device_initialize(void)
@@ -141,7 +105,12 @@ int lcd_device_initialize(void)
     /* Open EBI  */
     EBI_Open(CONFIG_DISP_EBI, EBI_BUSWIDTH_16BIT, EBI_TIMING_FAST, EBI_OPMODE_ADSEPARATE, EBI_CS_ACTIVE_LOW);
     EBI_ENABLE_WRITE_BUFFER();
-    EBI_OptimizeTiming();
+    EBI_ApplyTiming(EBI_8080_ACCESS_NS,
+                    EBI_8080_WR_IDLE_NS,
+                    EBI_8080_WR_AHD_NS,
+                    EBI_8080_RD_AHD_NS,
+                    EBI_8080_RD_IDLE_NS);
+
 #elif defined(CONFIG_DISP_SPI)
     /* Open SPI */
     SPI_Open(CONFIG_DISP_SPI, SPI_MASTER, SPI_MODE_0, 8, CONFIG_DISP_SPI_CLOCK);

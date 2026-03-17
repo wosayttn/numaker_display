@@ -16,6 +16,8 @@ uint32_t crc32(uint8_t *ptr, uint32_t len);
 
 void demo_lcd_flush(const S_LCD_INFO *psLcdInfo);
 void demo_lcd_readback(const S_LCD_INFO *psLcdInfo);
+void demo_lcd_readback_random(const S_LCD_INFO *psLcdInfo);
 void demo_touchpad_getpoint(void);
+void EBI_AutomatedSearch(const S_LCD_INFO *psLcdInfo);
 
 #endif //__DISPLAY_TESTCASES_H__

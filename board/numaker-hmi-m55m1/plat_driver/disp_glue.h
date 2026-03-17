@@ -55,6 +55,12 @@
 #define DISP_SET_BACKLIGHT         GPIO_PIN_DATA(NU_GET_PORT(CONFIG_DISP_PIN_BACKLIGHT), NU_GET_PIN(CONFIG_DISP_PIN_BACKLIGHT)) = 1
 #define DISP_CLR_BACKLIGHT         GPIO_PIN_DATA(NU_GET_PORT(CONFIG_DISP_PIN_BACKLIGHT), NU_GET_PIN(CONFIG_DISP_PIN_BACKLIGHT)) = 0
 
+#if defined(CONFIG_DISP_LT7381) && (CONFIG_DISP_LT7381==1)
+    #define CONFIG_DISP_LINE_BUFFER_NUMBER      (DISP_VER_RES_MAX)
+#endif
+
+
+int EBI_ApplyTiming(int acc_ns, int wr_idle_ns, int wr_ahd_ns, int rd_ahd_ns, int rd_idle_ns);
 int lcd_device_initialize(void);
 int lcd_device_finalize(void);
 int lcd_device_open(void);

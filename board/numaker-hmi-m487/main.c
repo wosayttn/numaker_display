@@ -122,11 +122,15 @@ int main(void)
     touchpad_device_initialize();
     touchpad_device_open();
 
+#if defined(CONFIG_DISP_EBI)
+    EBI_AutomatedSearch(&sLcdInfo);
+#endif
+
     while (1)
     {
         demo_lcd_flush(&sLcdInfo);
-        demo_touchpad_getpoint();
-        demo_lcd_readback(&sLcdInfo);
+        //demo_touchpad_getpoint();
+        demo_lcd_readback_random(&sLcdInfo);
     }
 
     lcd_device_close();

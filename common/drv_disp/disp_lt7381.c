@@ -503,6 +503,14 @@ void disp_fillrect(uint16_t *pixels, const disp_area_t *area)
 
     disp_set_column(area->x1, area->x2);
     disp_set_page(area->y1, area->y2);
+
+    /* Set Graphic Read/Write position */
+    disp_write_reg(0x5F, 0);
+    disp_write_reg(0x60, 0);
+    disp_write_reg(0x61, 0);
+    disp_write_reg(0x62, 0);
+    DISP_WRITE_REG(0x04);
+
     disp_send_pixels(pixels, h * w * sizeof(uint16_t));
 }
 
@@ -513,5 +521,13 @@ void disp_readrect(uint16_t *pixels, const disp_area_t *area)
 
     disp_set_column(area->x1, area->x2);
     disp_set_page(area->y1, area->y2);
+
+    /* Set Graphic Read/Write position */
+    disp_write_reg(0x5F, 0);
+    disp_write_reg(0x60, 0);
+    disp_write_reg(0x61, 0);
+    disp_write_reg(0x62, 0);
+    DISP_WRITE_REG(0x04);
+
     disp_receive_pixels(pixels, h * w * sizeof(uint16_t));
 }

@@ -10,13 +10,14 @@
 #include "display_testcases.h"
 #include "perf_ev.h"
 
+
 static void sys_init(void)
 {
     /* Unlock protected registers */
     SYS_UnlockReg();
 
     /* Enable PLL0 clock from HXT and switch SCLK clock source to PLL0 */
-    CLK_SetBusClock(CLK_SCLKSEL_SCLKSEL_APLL0, CLK_APLLCTL_APLLSRC_HXT, FREQ_220MHZ);
+    CLK_SetBusClock(CLK_SCLKSEL_SCLKSEL_APLL0, CLK_APLLCTL_APLLSRC_HXT, FREQ_200MHZ);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
@@ -137,11 +138,15 @@ int main(void)
     touchpad_device_initialize();
     touchpad_device_open();
 
+#if defined(CONFIG_DISP_EBI)
+    EBI_AutomatedSearch(&sLcdInfo);
+#endif
+
     while (1)
     {
         demo_lcd_flush(&sLcdInfo);
         //demo_touchpad_getpoint();
-        demo_lcd_readback(&sLcdInfo);
+        demo_lcd_readback_random(&sLcdInfo);
     }
 
     lcd_device_close();

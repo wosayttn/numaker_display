@@ -41,6 +41,19 @@ void disp_write_reg(uint16_t reg, uint16_t data)
     DISP_WRITE_DATA(data & 0xFF);
 }
 
+uint16_t disp_read_reg(uint8_t reg)
+{
+    volatile uint16_t data = 0xFFFFu;
+
+    // Register
+    DISP_WRITE_REG(reg & 0xFF);
+
+    // Data
+    data = DISP_READ_DATA();
+
+    return data;
+}
+
 void disp_set_column(uint16_t StartCol, uint16_t EndCol)
 {
     uint16_t ActiveX = EndCol - StartCol + 1;
@@ -66,17 +79,12 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
 {
     int count = byte_len / sizeof(uint16_t);
 
-    /* Set Graphic Read/Write position */
-    disp_write_reg(0x5F, 0);
-    disp_write_reg(0x60, 0);
-    disp_write_reg(0x61, 0);
-    disp_write_reg(0x62, 0);
-
-    /* Memory Data Read/Write Port */
-    DISP_WRITE_REG(0x04);
+    while (!LT7381_VRAM_WF_ISEMPTY()) {}
 
 #if defined(CONFIG_DISP_USE_PDMA)
     // PDMA-M2M feed
+    /* FIXME */
+    /* Cannot do LT7381_VRAM_WF_ISFULL during PDMA transferring. So, it need slow down timing */
     if (count > 512)
     {
         nu_pdma_mempush((void *)CONFIG_DISP_DAT_ADDR, (void *)pixels, 16, count);
@@ -91,6 +99,7 @@ void disp_send_pixels(uint16_t *pixels, int byte_len)
             /* Check VRAM FIFO is full or not. */
             while (LT7381_VRAM_WF_ISFULL());
             DISP_WRITE_DATA(pixels[i]);
+
             i++;
         }
     }
@@ -103,18 +112,10 @@ void disp_receive_pixels(uint16_t *pixels, int byte_len)
     int count = byte_len / sizeof(uint16_t);
     volatile uint16_t dummy;
 
-    disp_write_reg(0x5F, 0);
-    disp_write_reg(0x60, 0);
-    disp_write_reg(0x61, 0);
-    disp_write_reg(0x62, 0);
-
-    DISP_WRITE_REG(0x04);
-
     /* Must do a dummy read to trigger read task. */
     dummy = DISP_READ_DATA();
-    while (!LT7381_VRAM_RF_ISFULL())
-    {
-    };
+
+    while (!LT7381_VRAM_RF_ISFULL()) {}
 
 #if defined(CONFIG_DISP_USE_PDMA)
     if (count > 512)

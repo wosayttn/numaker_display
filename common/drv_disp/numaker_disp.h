@@ -105,13 +105,12 @@ typedef struct
     void DISP_WRITE_DATA(uint8_t u8Dat);
 #endif
 
-
-#if !defined(CONFIG_VRAM_BUFFER_NUM)
-    #define CONFIG_VRAM_BUFFER_NUM              1
+#if !defined(CONFIG_DISP_LINE_BUFFER_NUMBER)
+    #define CONFIG_DISP_LINE_BUFFER_NUMBER      (DISP_VER_RES_MAX)
 #endif
 
 #if !defined(CONFIG_VRAM_TOTAL_ALLOCATED_SIZE)
-    #define CONFIG_VRAM_TOTAL_ALLOCATED_SIZE    (CONFIG_VRAM_BUFFER_NUM * DISP_HOR_RES_MAX * DISP_VER_RES_MAX * (DISP_COLOR_DEPTH/8))
+    #define CONFIG_VRAM_TOTAL_ALLOCATED_SIZE    (DISP_HOR_RES_MAX * CONFIG_DISP_LINE_BUFFER_NUMBER * (DISP_COLOR_DEPTH/8))
 #endif
 
 #define disp_delay_ms(ms)            sysDelay(ms)

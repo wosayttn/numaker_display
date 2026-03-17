@@ -615,7 +615,7 @@ int nu_pdma_desc_setup(int i32ChannID, nu_pdma_desc_t dma_desc, uint32_t u32Data
             dma_desc->CTL |= (PDMA_REQ_BURST | PDMA_BURST_1);
             break;
         default:
-            dma_desc->CTL |= (PDMA_REQ_BURST | PDMA_BURST_32);
+            dma_desc->CTL |= (PDMA_REQ_BURST | PDMA_BURST_16);
             break;
         }
     }

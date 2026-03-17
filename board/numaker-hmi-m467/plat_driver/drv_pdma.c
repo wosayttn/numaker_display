@@ -631,7 +631,7 @@ int nu_pdma_desc_setup(int i32ChannID, nu_pdma_desc_t dma_desc, uint32_t u32Data
             dma_desc->CTL |= (PDMA_REQ_BURST | PDMA_BURST_1);
             break;
         default:
-            dma_desc->CTL |= (PDMA_REQ_BURST | PDMA_BURST_32);
+            dma_desc->CTL |= (PDMA_REQ_BURST | PDMA_BURST_16);
             break;
         }
     }
@@ -830,7 +830,7 @@ static void _nu_pdma_transfer(int i32ChannID, uint32_t u32Peripheral, nu_pdma_de
                          u32Peripheral,
                          (head->NEXT != 0) ? 1 : 0,
                          (uint32_t)head);
-
+    __DSB();
     /* If peripheral is M2M, trigger it. */
     if (u32Peripheral == PDMA_MEM)
     {

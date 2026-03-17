@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "nu_misc.h"
+#include <math.h>
 
 #if defined(__FREERTOS__)
     #include "FreeRTOS.h"
@@ -52,3 +53,40 @@ void nvt_free_align(void *ptr)
 #endif
 
 }
+
+uint32_t ns_to_cycles_ceil(double ns, double clk_hz)
+{
+    if (ns <= 0.0 || clk_hz <= 0.0)
+        return 0;
+
+    /* ceil(ns * clk_hz / 1e9) */
+    double cycles = (ns * clk_hz) / 1e9;
+    return (uint32_t)ceil(cycles);
+}
+
+uint32_t hz_to_ns_ceil(double hz)
+{
+    if (hz <= 0.0)
+        return 0;
+
+    /* ceil(1e9 / hz) */
+    double ns = 1e9 / hz;
+    return (uint32_t)ceil(ns);
+}
+
+double ns_to_cycles(double ns, double clk_hz)
+{
+    if (ns <= 0.0 || clk_hz <= 0.0)
+        return 0;
+
+    return (ns * clk_hz) / 1e9;
+}
+
+double hz_to_ns(double hz)
+{
+    if (hz <= 0.0)
+        return 0;
+
+    return 1e9 / hz;;
+}
+

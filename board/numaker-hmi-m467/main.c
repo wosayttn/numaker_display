@@ -10,6 +10,24 @@
 #include "display_testcases.h"
 #include "perf_ev.h"
 
+void MPU_Config_ARMv7M(void)
+{
+    // 1. MPU
+    MPU->CTRL = 0;
+
+    // 2. Region 0: 0x60000000 (Size: 2MB = 2^(20+1) -> 20)
+    MPU->RNR  = 0;
+    MPU->RBAR = 0x60000000UL;
+    // TEX=0, C=0, B=0 (Device-nGnRnE), S=0, AP=3 (Full Access), Size=20 (2MB), Enable=1
+    MPU->RASR = (0x03UL << 24) | (20UL << 1) | 0x01UL;
+
+    // 4. MPU (PRIVDEFENA)
+    MPU->CTRL = MPU_CTRL_ENABLE_Msk | MPU_CTRL_PRIVDEFENA_Msk;
+
+    __DSB();
+    __ISB();
+}
+
 static void sys_init(void)
 {
     /* Unlock protected registers */
@@ -89,13 +107,13 @@ static void sys_init(void)
     SYS->GPJ_MFP2 &= ~(SYS_GPJ_MFP2_PJ9MFP_Msk | SYS_GPJ_MFP2_PJ8MFP_Msk);
     SYS->GPJ_MFP2 |= (SYS_GPJ_MFP2_PJ9MFP_EBI_nWR | SYS_GPJ_MFP2_PJ8MFP_EBI_nRD);
 
-    GPIO_SetSlewCtl(PC, (BIT0 | BIT1 | BIT2 | BIT3 | BIT4 | BIT5), GPIO_SLEWCTL_FAST);
-    GPIO_SetSlewCtl(PD, (BIT8 | BIT9), GPIO_SLEWCTL_FAST);
-    GPIO_SetSlewCtl(PE, (BIT14 | BIT15), GPIO_SLEWCTL_FAST);
-    GPIO_SetSlewCtl(PE, (BIT0 | BIT1), GPIO_SLEWCTL_FAST);
-    GPIO_SetSlewCtl(PH, (BIT7 | BIT8 | BIT9 | BIT10 | BIT11), GPIO_SLEWCTL_FAST);
-    GPIO_SetSlewCtl(PJ, (BIT8 | BIT9), GPIO_SLEWCTL_FAST);
-    GPIO_SetSlewCtl(PD, BIT14, GPIO_SLEWCTL_FAST);
+    GPIO_SetSlewCtl(PC, (BIT0 | BIT1 | BIT2 | BIT3 | BIT4 | BIT5), GPIO_SLEWCTL_HIGH);
+    GPIO_SetSlewCtl(PD, (BIT8 | BIT9), GPIO_SLEWCTL_HIGH);
+    GPIO_SetSlewCtl(PE, (BIT14 | BIT15), GPIO_SLEWCTL_HIGH);
+    GPIO_SetSlewCtl(PE, (BIT0 | BIT1), GPIO_SLEWCTL_HIGH);
+    GPIO_SetSlewCtl(PH, (BIT7 | BIT8 | BIT9 | BIT10 | BIT11), GPIO_SLEWCTL_HIGH);
+    GPIO_SetSlewCtl(PJ, (BIT8 | BIT9), GPIO_SLEWCTL_HIGH);
+    GPIO_SetSlewCtl(PD, BIT14, GPIO_SLEWCTL_HIGH);
 
     /* Enable I2C1 module clock */
     CLK_EnableModuleClock(I2C1_MODULE);
@@ -119,6 +137,8 @@ static void sys_init(void)
 
     /* Initial systick for performence evaluation. */
     InitSysTick();
+
+    MPU_Config_ARMv7M();
 }
 
 int main(void)
@@ -141,11 +161,15 @@ int main(void)
     touchpad_device_initialize();
     touchpad_device_open();
 
+#if defined(CONFIG_DISP_EBI)
+    EBI_AutomatedSearch(&sLcdInfo);
+#endif
+
     while (1)
     {
         demo_lcd_flush(&sLcdInfo);
-        demo_touchpad_getpoint();
-        demo_lcd_readback(&sLcdInfo);
+        //demo_touchpad_getpoint();
+        demo_lcd_readback_random(&sLcdInfo);
     }
 
     lcd_device_close();
