@@ -61,6 +61,7 @@ static void sys_init(void)
 
     /* Select EADC peripheral clock source. */
     CLK_SetModuleClock(EADC0_MODULE, CLK_EADCSEL_EADC0SEL_PCLK0, CLK_EADCDIV_EADC0DIV(8));
+    CLK_EnableModuleClock(GDMA0_MODULE);
 
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init I/O Multi-function                                                                                 */
@@ -147,6 +148,10 @@ int main(void)
         demo_lcd_flush(&sLcdInfo);
         //demo_touchpad_getpoint();
         demo_lcd_readback_random(&sLcdInfo);
+
+#if defined(GDMA_BASE)
+        demo_lcd_gdma_2d_copy(&sLcdInfo);
+#endif
     }
 
     lcd_device_close();

@@ -8,11 +8,17 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include "NuMicro.h"
 #include "numaker_disp.h"
 #include "numaker_touch.h"
 #include "sw_crc.h"
 #include "perf_ev.h"
+
+#if defined(GDMA_BASE)
+    #include "dma350_lib.h"
+    #include "gdma.h"
+#endif
 
 static uint32_t disp_area_pixel_count(const disp_area_t *area)
 {
@@ -437,5 +443,71 @@ void EBI_AutomatedSearch(const S_LCD_INFO *psLcdInfo)
 
     printf("Applied: ACC=%d, WIDLE=%d, AHD=%d, RIDLE=%d,\n",
            best_acc, best_widle, best_ahd, best_ridle);
+}
+#endif
+
+#if defined(GDMA_BASE)
+
+extern uint8_t acimageSRC_200x200[80016UL + 1] __attribute__((aligned(4)));
+
+void demo_lcd_gdma_2d_copy(const S_LCD_INFO *psLcdInfo)
+{
+    uint64_t start, elapsed;
+    uint32_t u32AreaPixelCount;
+
+    /* Full-screen area. */
+    disp_area_t sArea_clean = { 0, 0, psLcdInfo->u32ResWidth - 1, psLcdInfo->u32ResHeight - 1};
+
+    /* Clean shadow buffer to zero. */
+    memset(psLcdInfo->pvVramStartAddr, 0, psLcdInfo->u32VramSize);
+
+    /* Flush shadow buffer to specified area on LCD panel. */
+    lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sArea_clean);
+
+    {
+        /* Top-left */
+        disp_area_t sArea_memcpy = { 0, 0, (200 - 1), (200 - 1) };
+        u32AreaPixelCount = disp_area_pixel_count(&sArea_memcpy);
+
+        start = GetSysTickCycleCount();
+
+        /* Copy to shadow buffer. */
+        memcpy(psLcdInfo->pvVramStartAddr, acimageSRC_200x200 + 16, sizeof(acimageSRC_200x200) - 16);
+
+        /* Flush shadow buffer to specified area on LCD panel. */
+        lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sArea_memcpy);
+
+        elapsed = GetSysTickCycleCount() - start;
+
+        printf("\033[32m[%s] CPU-Render+flush %d pixels, elpased %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+    }
+
+    {
+        /* Right-bottom */
+        disp_area_t sArea_gdma = { DISP_HOR_RES_MAX - 200, DISP_VER_RES_MAX - 200, DISP_HOR_RES_MAX - 1, DISP_VER_RES_MAX - 1 };
+        u32AreaPixelCount = disp_area_pixel_count(&sArea_gdma);
+
+        start = GetSysTickCycleCount();
+        /* Use GDMA to copy pixel data to shadow buffer. */
+        dma350_draw_from_canvas(
+            GDMA_CH_DEV_S[0],                        // DMA350 channel device structure
+            (const void *)(acimageSRC_200x200 + 16), // Source address, top left corner
+            psLcdInfo->pvVramStartAddr,              // Destination address, top left corner,
+            200, 200, 200,                           // src_width, src_height, source stride(line width of image)
+            200, 200, 200,                           // dest_width, dest_height, dest_stride(line width of buffer)
+            DMA350_CH_TRANSIZE_16BITS,               // Size of a pixel, dma350_ch_transize_t
+            DMA350_LIB_TRANSFORM_NONE,               // Transform, dma350_lib_transform_t
+            DMA350_LIB_EXEC_BLOCKING);               // exec_type, dma350_lib_exec_type_t
+
+        /* Flush shadow buffer to specified area on LCD panel. */
+        lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sArea_gdma);
+
+        elapsed = GetSysTickCycleCount() - start;
+
+        printf("\033[32m[%s] GDMA-Render+flush %d pixels, elpased %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+    }
+
+    /* Optional: delay to see color */
+    TIMER_Delay(TIMER0, 500000);
 }
 #endif

@@ -190,7 +190,7 @@
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>1</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>1</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>2</nSecure>
@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>CONFIG_DISP_LT7381=1</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\bsp\m55m1\Library\CMSIS\DSP\Include;..\..\..\bsp\M55M1\Library\CMSIS\Core\Include;..\..\..\bsp\M55M1\Library\Device\Nuvoton\M55M1\Include;..\..\..\bsp\M55M1\Library\StdDriver\inc;..\plat_driver;..\..\..\common\drv_indev;..\..\..\common\drv_disp;..\..\..\common;..\..\..\</IncludePath>
+              <IncludePath>..\;..\..\..\bsp\m55m1\Library\CMSIS\DSP\Include;..\..\..\bsp\M55M1\Library\CMSIS\Core\Include;..\..\..\bsp\M55M1\Library\Device\Nuvoton\M55M1\Include;..\..\..\bsp\M55M1\Library\StdDriver\inc;..\..\..\bsp\m55m1\Library\StdDriver\inc\gdma;..\plat_driver;..\..\..\common\drv_indev;..\..\..\common\drv_disp;..\..\..\common;..\..\..\</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -445,6 +445,11 @@
               <FileType>5</FileType>
               <FilePath>..\mpu_config_M55M1.h</FilePath>
             </File>
+            <File>
+              <FileName>imageSRC_200x200.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\imageSRC_200x200.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -514,6 +519,26 @@
               <FileName>eadc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\eadc.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_ch_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_ch_drv.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_drv.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_lib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_lib.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_address_remap_template.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_address_remap_template.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1315,6 +1340,11 @@
               <FileType>5</FileType>
               <FilePath>..\mpu_config_M55M1.h</FilePath>
             </File>
+            <File>
+              <FileName>imageSRC_200x200.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\imageSRC_200x200.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1384,6 +1414,26 @@
               <FileName>eadc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\eadc.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_ch_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_ch_drv.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_drv.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_lib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_lib.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_address_remap_template.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_address_remap_template.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2254,6 +2304,11 @@
               <FileType>5</FileType>
               <FilePath>..\mpu_config_M55M1.h</FilePath>
             </File>
+            <File>
+              <FileName>imageSRC_200x200.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\imageSRC_200x200.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2323,6 +2378,26 @@
               <FileName>eadc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\eadc.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_ch_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_ch_drv.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_drv.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_lib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_lib.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_address_remap_template.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_address_remap_template.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3124,6 +3199,11 @@
               <FileType>5</FileType>
               <FilePath>..\mpu_config_M55M1.h</FilePath>
             </File>
+            <File>
+              <FileName>imageSRC_200x200.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\imageSRC_200x200.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3193,6 +3273,26 @@
               <FileName>eadc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\eadc.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_ch_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_ch_drv.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_drv.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_lib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_lib.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma350_address_remap_template.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\m55m1\Library\StdDriver\src\gdma\dma350_address_remap_template.c</FilePath>
             </File>
           </Files>
         </Group>
