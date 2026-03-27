@@ -115,7 +115,7 @@ static void sys_init(void)
 
     InitDebugUart();
 
-    /* Initial systick for performence evaluation. */
+    /* Initial systick for performance evaluation. */
     InitSysTick();
 }
 

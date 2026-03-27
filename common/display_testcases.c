@@ -20,74 +20,117 @@
     #include "gdma.h"
 #endif
 
+/**
+ * @brief Calculate the total pixel count for a display area.
+ *
+ * Computes the number of pixels in a rectangular display area.
+ * Validates that the area coordinates are in correct order (x2 >= x1, y2 >= y1).
+ *
+ * @param area[in]  Pointer to display area structure defining the rectangle
+ *
+ * @return Total pixel count (width * height), or 0 if area is invalid
+ */
 static uint32_t disp_area_pixel_count(const disp_area_t *area)
 {
+    /* Return 0 if pointer is NULL */
     if (!area)
         return 0;
 
-    /* Invalid area */
+    /* Check if area coordinates are valid (end point must be >= start point) */
     if (area->x2 < area->x1 || area->y2 < area->y1)
         return 0;
 
+    /* Calculate width and height of the rectangular area */
     uint32_t width  = (uint32_t)(area->x2 - area->x1 + 1);
     uint32_t height = (uint32_t)(area->y2 - area->y1 + 1);
 
+    /* Return total pixel count */
     return width * height;
 }
 
+/**
+ * @brief Test LCD display with multiple color writes and reads.
+ *
+ * Performs LCD display flush operations with different colors to both full-screen
+ * and partial-screen areas. Measures and reports performance metrics for each
+ * flush operation.
+ *
+ * @param psLcdInfo[in]  Pointer to LCD information structure containing VRAM address
+ *                       and display parameters
+ *
+ * @note This function tests both full display refresh and partial screen updates
+ */
 void demo_lcd_flush(const S_LCD_INFO *psLcdInfo)
 {
+    /* Define three test colors: Red, Green, Blue (RGB565 format) */
     uint16_t color[3] = {0xF800, 0x07E0, 0x001F};
-    uint64_t start, elapsed;
+    uint64_t start, elapsed;    /* For performance measurement */
 
+    /* Define full screen refresh area (entire display) */
     disp_area_t sFullRefresh = {0, 0,
                                 DISP_HOR_RES_MAX - 1,
                                 DISP_VER_RES_MAX - 1
                                };
 
+    /* Define partial screen update area (center region) */
     disp_area_t sPartialUpdate = { DISP_HOR_RES_MAX / 4,
                                    DISP_VER_RES_MAX / 4,
                                    (DISP_HOR_RES_MAX / 2 + DISP_HOR_RES_MAX / 4) - 1,
                                    (DISP_VER_RES_MAX / 2 + DISP_VER_RES_MAX / 4) - 1
                                  };
 
+    /* Get pointer to video RAM (shadow buffer) */
     uint16_t *pu16Color = (uint16_t *)psLcdInfo->pvVramStartAddr;
+
+    /* Loop through each test color */
     for (int c = 0; c < sizeof(color) / sizeof(uint16_t); c++)
     {
         uint32_t u32AreaPixelCount;
 
-        /* Render to shadow buffer */
+        /* ===== Test Full Display Refresh ===== */
+        /* Calculate pixel count for full refresh area */
         u32AreaPixelCount = disp_area_pixel_count(&sFullRefresh);
+
+        /* Check if VRAM has enough space for this operation */
         if (CONFIG_VRAM_TOTAL_ALLOCATED_SIZE >= (u32AreaPixelCount * psLcdInfo->u32BytePerPixel))
         {
+            /* Fill entire shadow buffer with current test color */
             for (int i = 0; i < u32AreaPixelCount; i++)
             {
                 pu16Color[i] = color[c];
             }
 
-            /* Flush to VRAM on LCD panel */
+            /* Measure and perform full screen flush to LCD panel */
             start = GetSysTickCycleCount();
             lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sFullRefresh);
             elapsed = GetSysTickCycleCount() - start;
-            printf("\033[32m[%s] FullRefresh flush %d pixels, elpased %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+
+            /* Report performance metric */
+            printf("\033[32m[%s] FullRefresh flush %d pixels, elapsed %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
         }
 
-        /* Render to shadow buffer */
+        /* ===== Test Partial Screen Update ===== */
+        /* Calculate pixel count for partial update area */
         u32AreaPixelCount = disp_area_pixel_count(&sPartialUpdate);
+
+        /* Check if VRAM has enough space for this operation */
         if (CONFIG_VRAM_TOTAL_ALLOCATED_SIZE >= (u32AreaPixelCount * psLcdInfo->u32BytePerPixel))
         {
+            /* Fill partial area of shadow buffer with alternate color */
             for (int i = 0; i < u32AreaPixelCount; i++)
             {
                 pu16Color[i] = color[(c + 1) % 3];
             }
 
-            /* Flush to VRAM on LCD panel */
+            /* Measure and perform partial screen flush to LCD panel */
             start = GetSysTickCycleCount();
             lcd_device_control(evLCD_CTRL_RECT_UPDATE, (void *)&sPartialUpdate);
             elapsed = GetSysTickCycleCount() - start;
-            printf("\033[32m[%s] PartialUpdate flush %d pixels, elpased %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
 
-            /* Optional: delay to see color */
+            /* Report performance metric */
+            printf("\033[32m[%s] PartialUpdate flush %d pixels, elapsed %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+
+            /* Delay to allow visual observation of color on display */
             TIMER_Delay(TIMER0, 500000);
         }
     }
@@ -150,7 +193,7 @@ void demo_lcd_readback(const S_LCD_INFO *psLcdInfo)
     start = GetSysTickCycleCount();
     lcd_device_control(evLCD_CTRL_RECT_READ, (void *)area);
     elapsed = GetSysTickCycleCount() - start;
-    printf("\033[33m[%s] Read %d pixels, elpased %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+    printf("\033[33m[%s] Read %d pixels, elapsed %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
 
     u32CheckSumR = crc32((uint8_t *)pu16Color, u32AreaPixelCount * sizeof(uint16_t));
     if (u32CheckSumW != u32CheckSumR)
@@ -170,6 +213,15 @@ void demo_lcd_readback(const S_LCD_INFO *psLcdInfo)
     }
 }
 
+/**
+ * @brief Test random rectangular area read-back from display.
+ *
+ * Generates random rectangular coordinates within display boundaries and
+ * available VRAM capacity. Writes random pattern, reads back, and verifies
+ * data integrity using CRC32 checksums.
+ *
+ * @param psLcdInfo[in]  Pointer to LCD information structure
+ */
 void demo_lcd_readback_random(const S_LCD_INFO *psLcdInfo)
 {
     int i;
@@ -177,22 +229,22 @@ void demo_lcd_readback_random(const S_LCD_INFO *psLcdInfo)
     disp_area_t sRandArea;
     disp_area_t *area = &sRandArea;
 
-    /* 1. Calculate the maximum number of pixels allowed by the allocated VRAM */
+    /* Calculate the maximum number of pixels allowed by the allocated VRAM */
     uint32_t u32MaxPixels = CONFIG_VRAM_TOTAL_ALLOCATED_SIZE / psLcdInfo->u32BytePerPixel;
     uint32_t u32Width, u32Height;
     uint16_t u16Color;
 
-    /* 2. Generate random width and height that fit within VRAM limits */
+    /* Generate random width and height that fit within VRAM limits */
     do
     {
-        // Random width between 1 and MAX_HOR
+        /* Random width between 1 and DISP_HOR_RES_MAX */
         u32Width  = (rand() % DISP_HOR_RES_MAX) + 1;
-        // Random height between 1 and MAX_VER
+        /* Random height between 1 and DISP_VER_RES_MAX */
         u32Height = (rand() % DISP_VER_RES_MAX) + 1;
     }
     while ((u32Width * u32Height) > u32MaxPixels);
 
-    /* 3. Generate random X, Y start coordinates within display boundaries */
+    /* Generate random X, Y start coordinates within display boundaries */
     area->x1 = rand() % (DISP_HOR_RES_MAX - u32Width + 1);
     area->y1 = rand() % (DISP_VER_RES_MAX - u32Height + 1);
     area->x2 = area->x1 + u32Width - 1;
@@ -256,6 +308,13 @@ void demo_lcd_readback_random(const S_LCD_INFO *psLcdInfo)
     }
 }
 
+/**
+ * @brief Test touch panel input by reading coordinates and state.
+ *
+ * Continuously reads touch point data for 3000 iterations and prints
+ * the X, Y coordinates and touch state (pressed/released).
+ * Used for touch input validation and debugging.
+ */
 void demo_touchpad_getpoint(void)
 {
     static numaker_indev_data_t s_data = {0};
@@ -272,7 +331,13 @@ void demo_touchpad_getpoint(void)
 
 /**
  * @brief Performs a pixel readback test on a random area.
- * @return 0 on success (stable), -1 on failure (unstable)
+ *
+ * Generates random rectangular area within display and VRAM limits,
+ * writes test pattern, reads back, and verifies data integrity.
+ * Used to validate EBI bus stability and display controller functionality.
+ *
+ * @param psLcdInfo[in]  Pointer to LCD information structure
+ * @return              0 on success (stable), -1 on failure (unstable)
  */
 static int verify_ebi_stability(const S_LCD_INFO *psLcdInfo)
 {
@@ -280,12 +345,13 @@ static int verify_ebi_stability(const S_LCD_INFO *psLcdInfo)
     uint32_t u32MaxPixels = CONFIG_VRAM_TOTAL_ALLOCATED_SIZE / psLcdInfo->u32BytePerPixel;
     uint16_t *pu16Color = (uint16_t *)psLcdInfo->pvVramStartAddr;
 
-    // Generate random area
+    /* Generate random rectangular area within display boundaries */
     uint32_t w = (rand() % DISP_HOR_RES_MAX) + 1;
     uint32_t h = (rand() % DISP_VER_RES_MAX) + 1;
     if ((w * h) > u32MaxPixels)
     {
-        w = u32MaxPixels / h; // Clamp to VRAM size
+        /* Clamp width to available VRAM capacity */
+        w = u32MaxPixels / h;
     }
 
     sArea.x1 = rand() % (DISP_HOR_RES_MAX - w + 1);
@@ -295,7 +361,7 @@ static int verify_ebi_stability(const S_LCD_INFO *psLcdInfo)
 
     uint32_t pixelCount = disp_area_pixel_count(&sArea);
 
-    // Write pattern
+    /* Write test pattern to VRAM */
     for (int i = 0; i < pixelCount; i++)
     {
         pu16Color[i] = (uint16_t)(i & 0xFFFF);
@@ -479,7 +545,7 @@ void demo_lcd_gdma_2d_copy(const S_LCD_INFO *psLcdInfo)
 
         elapsed = GetSysTickCycleCount() - start;
 
-        printf("\033[32m[%s] CPU-Render+flush %d pixels, elpased %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+        printf("\033[32m[%s] CPU-Render+flush %d pixels, elapsed %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
     }
 
     {
@@ -504,7 +570,7 @@ void demo_lcd_gdma_2d_copy(const S_LCD_INFO *psLcdInfo)
 
         elapsed = GetSysTickCycleCount() - start;
 
-        printf("\033[32m[%s] GDMA-Render+flush %d pixels, elpased %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
+        printf("\033[32m[%s] GDMA-Render+flush %d pixels, elapsed %.2fms.\033[0m\n", CONFIG_DISPLAY_BOARD_NAME, u32AreaPixelCount, (double)elapsed * 1000.0 / SystemCoreClock);
     }
 
     /* Optional: delay to see color */

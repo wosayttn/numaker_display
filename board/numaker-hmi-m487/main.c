@@ -94,7 +94,7 @@ static void sys_init(void)
     SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB9MFP_Msk | SYS_GPB_MFPH_PB8MFP_Msk);
     SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB9MFP_EADC0_CH9 | SYS_GPB_MFPH_PB8MFP_EADC0_CH8);
 
-    /* Initial systick for performence evaluation. */
+    /* Initial systick for performance evaluation. */
     InitSysTick();
     UART_Open(UART0, 115200);
 

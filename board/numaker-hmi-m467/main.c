@@ -135,7 +135,7 @@ static void sys_init(void)
 
     UART_Open(UART0, 115200);
 
-    /* Initial systick for performence evaluation. */
+    /* Initial systick for performance evaluation. */
     InitSysTick();
 
     MPU_Config_ARMv7M();

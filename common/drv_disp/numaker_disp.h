@@ -6,8 +6,8 @@
  * @copyright (C) 2024 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
-#ifndef __DISP_H__
-#define __DISP_H__
+#ifndef __NUMAKER_DISP_H__
+#define __NUMAKER_DISP_H__
 
 #include <stdint.h>
 #include "disp_glue.h"
@@ -124,4 +124,4 @@ void disp_fillrect(uint16_t *pixels, const disp_area_t *area);
 void disp_readrect(uint16_t *pixels, const disp_area_t *area);
 int  disp_init(void);
 
-#endif /* __DISP_H__ */
+#endif /* __NUMAKER_DISP_H__ */

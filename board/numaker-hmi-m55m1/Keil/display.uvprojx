@@ -1235,7 +1235,7 @@
               <MiscControls></MiscControls>
               <Define>CONFIG_DISP_NV3041A=1</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\bsp\m55m1\Library\CMSIS\DSP\Include;..\..\..\bsp\M55M1\Library\CMSIS\Core\Include;..\..\..\bsp\M55M1\Library\Device\Nuvoton\M55M1\Include;..\..\..\bsp\M55M1\Library\StdDriver\inc;..\plat_driver;..\..\..\common\drv_disp;..\..\..\common\drv_indev;..\..\..\common;..\..\..\</IncludePath>
+              <IncludePath>..\;..\..\..\bsp\m55m1\Library\CMSIS\DSP\Include;..\..\..\bsp\M55M1\Library\CMSIS\Core\Include;..\..\..\bsp\M55M1\Library\Device\Nuvoton\M55M1\Include;..\..\..\bsp\m55m1\Library\StdDriver\inc\gdma;..\..\..\bsp\M55M1\Library\StdDriver\inc;..\plat_driver;..\..\..\common\drv_disp;..\..\..\common\drv_indev;..\..\..\common;..\..\..\</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -2199,7 +2199,7 @@
               <MiscControls></MiscControls>
               <Define>CONFIG_DISP_FSA506=1</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\bsp\m55m1\Library\CMSIS\DSP\Include;..\..\..\bsp\M55M1\Library\CMSIS\Core\Include;..\..\..\bsp\M55M1\Library\Device\Nuvoton\M55M1\Include;..\..\..\bsp\M55M1\Library\StdDriver\inc;..\plat_driver;..\..\..\common\drv_disp;..\..\..\common\drv_indev;..\..\..\common</IncludePath>
+              <IncludePath>..\;..\..\..\bsp\m55m1\Library\CMSIS\DSP\Include;..\..\..\bsp\M55M1\Library\CMSIS\Core\Include;..\..\..\bsp\M55M1\Library\Device\Nuvoton\M55M1\Include;..\..\..\bsp\m55m1\Library\StdDriver\inc\gdma;..\..\..\bsp\M55M1\Library\StdDriver\inc;..\plat_driver;..\..\..\common\drv_disp;..\..\..\common\drv_indev;..\..\..\common</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -3094,7 +3094,7 @@
               <MiscControls></MiscControls>
               <Define>CONFIG_DISP_ILI9341=1</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\bsp\m55m1\Library\CMSIS\DSP\Include;..\..\..\bsp\M55M1\Library\CMSIS\Core\Include;..\..\..\bsp\M55M1\Library\Device\Nuvoton\M55M1\Include;..\..\..\bsp\M55M1\Library\StdDriver\inc;..\plat_driver;..\..\..\common\drv_disp;..\..\..\common\drv_indev;..\..\..\common;..\..\..\</IncludePath>
+              <IncludePath>..\;..\..\..\bsp\m55m1\Library\CMSIS\DSP\Include;..\..\..\bsp\M55M1\Library\CMSIS\Core\Include;..\..\..\bsp\M55M1\Library\Device\Nuvoton\M55M1\Include;..\..\..\bsp\m55m1\Library\StdDriver\inc\gdma;..\..\..\bsp\M55M1\Library\StdDriver\inc;..\plat_driver;..\..\..\common\drv_disp;..\..\..\common\drv_indev;..\..\..\common;..\..\..\</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
