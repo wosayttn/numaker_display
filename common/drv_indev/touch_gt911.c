@@ -227,8 +227,8 @@ static int gt911_get_product_id(void)
         return -1;
     }
 
-    printf("Product ID: GT%c%c%c%c\n", sPID.u8PID1, sPID.u8PID2, sPID.u8PID3, sPID.u8PID4);
-    printf("Firmware Version: %04X\n", sPID.u16FWVersion);
+    //printf("Product ID: GT%c%c%c%c\n", sPID.u8PID1, sPID.u8PID2, sPID.u8PID3, sPID.u8PID4);
+    ////printf("Firmware Version: %04X\n", sPID.u16FWVersion);
 
     return 0;
 }
@@ -239,13 +239,13 @@ static int gt911_get_info(void)
 
     if (gt911_read_reg(GT911_CONFIG_START, out_info, sizeof(out_info)) != 0)
     {
-        printf("read info failed\n");
+        //printf("read info failed\n");
         return -1;
     }
 
-    printf("X range: %d\n", (out_info[2] << 8) | out_info[1]);
-    printf("Y range: %d\n", (out_info[4] << 8) | out_info[3]);
-    printf("Point number: %d\n", out_info[5] & 0x0f);
+    //printf("X range: %d\n", (out_info[2] << 8) | out_info[1]);
+    //printf("Y range: %d\n", (out_info[4] << 8) | out_info[3]);
+    //printf("Point number: %d\n", out_info[5] & 0x0f);
 
     return 0;
 }
@@ -256,7 +256,7 @@ static int gt911_soft_reset(void)
 
     if (gt911_write_reg(GT911_COMMAND_REG, &u8Data, sizeof(u8Data)) != 0)
     {
-        printf("soft reset failed\n");
+        //printf("soft reset failed\n");
         return -1;
     }
 
@@ -389,20 +389,20 @@ static void gt911_dump_config(void)
     // Update configuration to GT911
     gt911_read_reg(GT911_CONFIG_START, GT911_CFG_TBL, sizeof(GT911_CFG_TBL));
 
-    printf("========================================================\n");
+    //printf("========================================================\n");
     for (int i = 0; i < sizeof(GT911_CFG_TBL); i += 8)
     {
-        printf("0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X\n",
-               GT911_CFG_TBL[i + 0],
-               GT911_CFG_TBL[i + 1],
-               GT911_CFG_TBL[i + 2],
-               GT911_CFG_TBL[i + 3],
-               GT911_CFG_TBL[i + 4],
-               GT911_CFG_TBL[i + 5],
-               GT911_CFG_TBL[i + 6],
-               GT911_CFG_TBL[i + 7]);
+//        printf("0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X\n",
+//               GT911_CFG_TBL[i + 0],
+//               GT911_CFG_TBL[i + 1],
+//               GT911_CFG_TBL[i + 2],
+//               GT911_CFG_TBL[i + 3],
+//               GT911_CFG_TBL[i + 4],
+//               GT911_CFG_TBL[i + 5],
+//               GT911_CFG_TBL[i + 6],
+//               GT911_CFG_TBL[i + 7]);
     }
-    printf("========================================================\n");
+    //printf("========================================================\n");
 }
 
 int indev_touch_init(void)

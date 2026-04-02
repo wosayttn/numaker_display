@@ -13,6 +13,7 @@
 #include <string.h>
 #include "NuMicro.h"
 #include "nu_misc.h"
+#include "drv_pdma.h"
 
 #if !defined(PORT_OFFSET)
     #define PORT_OFFSET                0x40
@@ -41,11 +42,7 @@
 #define CONFIG_DISP_LINE_BUFFER_NUMBER      (DISP_VER_RES_MAX/2)
 
 int EBI_ApplyTiming(int acc_ns, int wr_idle_ns, int wr_ahd_ns, int rd_ahd_ns, int rd_idle_ns);
-int lcd_device_initialize(void);
-int lcd_device_finalize(void);
-int lcd_device_open(void);
-void lcd_device_close(void);
-int lcd_device_control(int cmd, void *argv);
+
 
 void sysDelay(uint32_t ms);
 

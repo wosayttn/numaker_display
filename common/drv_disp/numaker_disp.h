@@ -12,10 +12,6 @@
 #include <stdint.h>
 #include "disp_glue.h"
 
-#if defined(CONFIG_DISP_USE_PDMA)
-    #include "drv_pdma.h"
-#endif
-
 /** Represents an area of the screen.*/
 typedef struct
 {
@@ -103,6 +99,10 @@ typedef struct
 
     void DISP_WRITE_REG(uint8_t u8Cmd);
     void DISP_WRITE_DATA(uint8_t u8Dat);
+
+#else
+    // User-defined
+    /* Sync-type? */
 #endif
 
 #if !defined(CONFIG_DISP_LINE_BUFFER_NUMBER)
@@ -123,5 +123,11 @@ void disp_receive_pixels(uint16_t *pixels, int byte_len);
 void disp_fillrect(uint16_t *pixels, const disp_area_t *area);
 void disp_readrect(uint16_t *pixels, const disp_area_t *area);
 int  disp_init(void);
+
+int lcd_device_initialize(void);
+int lcd_device_finalize(void);
+int lcd_device_open(void);
+void lcd_device_close(void);
+int lcd_device_control(int cmd, void *argv);
 
 #endif /* __NUMAKER_DISP_H__ */

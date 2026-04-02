@@ -9,3 +9,9 @@
 [submodule "bsp/m480"]
 	path = bsp/m480
 	url = https://github.com/OpenNuvoton/M480BSP
+[submodule "bsp/m3331"]
+	path = bsp/m3331
+	url = https://github.com/OpenNuvoton/m3331bsp
+[submodule "bsp/m3351"]
+	path = bsp/m3351
+	url = https://github.com/OpenNuvoton/M3351BSP

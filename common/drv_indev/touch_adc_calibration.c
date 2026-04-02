@@ -42,14 +42,14 @@ void ad_touch_update_calmat(S_CALIBRATION_MATRIX *psNewCalMat)
     if (psNewCalMat->div != 0)
     {
         memcpy(&g_sCalMat, psNewCalMat, sizeof(S_CALIBRATION_MATRIX));
-        printf("Applied calibration data: %d, %d, %d, %d, %d, %d, %d\n",
-               g_sCalMat.a,
-               g_sCalMat.b,
-               g_sCalMat.c,
-               g_sCalMat.d,
-               g_sCalMat.e,
-               g_sCalMat.f,
-               g_sCalMat.div);
+//        printf("Applied calibration data: %d, %d, %d, %d, %d, %d, %d\n",
+//               g_sCalMat.a,
+//               g_sCalMat.b,
+//               g_sCalMat.c,
+//               g_sCalMat.d,
+//               g_sCalMat.e,
+//               g_sCalMat.f,
+//               g_sCalMat.div);
 
     }
 }
@@ -401,22 +401,22 @@ int ad_touch_calibrate(void)
             {
                 u32SumX += (uint32_t)sInDevData.point.x;
                 u32SumY += (uint32_t)sInDevData.point.y;
-                printf("[%d %d] - Disp:[%d, %d] -> ADC:[%d, %d], SUM:[%d, %d]\n",
-                       i,
-                       count,
-                       sDispPoints[i].x,
-                       sDispPoints[i].y,
-                       sInDevData.point.x,
-                       sInDevData.point.y,
-                       u32SumX,
-                       u32SumY);
+//                printf("[%d %d] - Disp:[%d, %d] -> ADC:[%d, %d], SUM:[%d, %d]\n",
+//                       i,
+//                       count,
+//                       sDispPoints[i].x,
+//                       sDispPoints[i].y,
+//                       sInDevData.point.x,
+//                       sInDevData.point.y,
+//                       u32SumX,
+//                       u32SumY);
                 count++;
             }
         }
 
         sADCPoints[i].x = (uint32_t)((float)u32SumX / DEF_MAX_GET_POINT_NUM);
         sADCPoints[i].y = (uint32_t)((float)u32SumY / DEF_MAX_GET_POINT_NUM);
-        printf("[%d] - Disp:[%d, %d], AVG-ADC:[%d, %d]\n", i, sDispPoints[i].x, sDispPoints[i].y, sADCPoints[i].x, sADCPoints[i].y);
+//        printf("[%d] - Disp:[%d, %d], AVG-ADC:[%d, %d]\n", i, sDispPoints[i].x, sDispPoints[i].y, sADCPoints[i].x, sADCPoints[i].y);
 
         _cleanscreen();
 
@@ -441,12 +441,12 @@ int ad_touch_calibrate(void)
 
             ad_touch_map(&sumx, &sumy);
 
-            printf("[%d] - Disp:[%d, %d], ADC:[%d, %d] -> map[%d, %d]\n", i, sDispPoints[i].x, sDispPoints[i].y, sADCPoints[i].x, sADCPoints[i].y, sumx, sumy);
+//            printf("[%d] - Disp:[%d, %d], ADC:[%d, %d] -> map[%d, %d]\n", i, sDispPoints[i].x, sDispPoints[i].y, sADCPoints[i].x, sADCPoints[i].y, sumx, sumy);
         }
     }
     else
     {
-        printf("Failed to calibrate.");
+//        printf("Failed to calibrate.");
     }
 
     return 0;

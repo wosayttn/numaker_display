@@ -12,7 +12,11 @@
 static struct nu_spi s_NuSPI =
 {
     .base           = CONFIG_DISP_SPI,
+#if defined(CONFIG_DISP_SPI_SS_PIN)
+    .ss_pin         = CONFIG_DISP_SPI_SS_PIN,
+#else
     .ss_pin         = -1,
+#endif
 #if defined(CONFIG_DISP_USE_PDMA)
     .pdma_perp_tx   = CONFIG_PDMA_SPI_TX,
     .pdma_chanid_tx = -1,
@@ -184,7 +188,6 @@ typedef union
     } S;
 } ili9341_color;
 
-
 static disp_area_t s_receive_area = {0};
 void disp_ili9341_set_area(const disp_area_t *area)
 {
@@ -199,9 +202,6 @@ void disp_receive_pixels(uint16_t *pixels, int byte_len)
     int32_t h = (int32_t)(s_receive_area.y2 - s_receive_area.y1 + 1);
     int32_t x = (int32_t)(s_receive_area.x1);
     int32_t y = (int32_t)(s_receive_area.y1);
-
-    disp_set_column(s_receive_area.x1, s_receive_area.x2);
-    disp_set_page(s_receive_area.y1, s_receive_area.y2);
 
     // Slow down SPI clock frequency when reading.
     SPI_SetBusClock(s_NuSPI.base, CONFIG_DISP_SPI_CLOCK / 2);

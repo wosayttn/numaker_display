@@ -54,6 +54,7 @@ void DISP_WRITE_REG(uint8_t u8Cmd)
  */
 void DISP_WRITE_DATA(uint8_t u8Dat)
 {
+    USPI_SET_DATA_WIDTH(CONFIG_DISP_SPI, 8);
     nu_uspi_transfer(&s_NuUSPI, (const void *)&u8Dat, NULL, 1);
 }
 
@@ -69,20 +70,6 @@ static void DISP_WRITE_DATA_2B(uint16_t u16Dat)
     USPI_SET_DATA_WIDTH(CONFIG_DISP_SPI, 16);
 
     nu_uspi_transfer(&s_NuUSPI, (const void *)&u16Dat, NULL, 2);
-}
-
-/**
- * @brief Send pixel data to ILI9341 via USPI interface.
- *
- * Transfers 16-bit pixel color data using USPI transfers.
- *
- * @param pixels[in]    Pointer to pixel data array (16-bit RGB565)
- * @param byte_len[in]  Total length of data in bytes
- */
-void disp_send_pixels(uint16_t *pixels, int byte_len)
-{
-    USPI_SET_DATA_WIDTH(CONFIG_DISP_SPI, 16);
-    nu_uspi_transfer(&s_NuUSPI, (const void *)pixels, NULL, byte_len);
 }
 
 /**
@@ -113,4 +100,129 @@ void disp_set_page(uint16_t StartPage, uint16_t EndPage)
     DISP_WRITE_REG(0x2B);
     DISP_WRITE_DATA_2B(StartPage);
     DISP_WRITE_DATA_2B(EndPage);
+}
+
+/**
+ * @brief Send pixel data to ILI9341 via USPI interface.
+ *
+ * Transfers 16-bit pixel color data using USPI transfers.
+ *
+ * @param pixels[in]    Pointer to pixel data array (16-bit RGB565)
+ * @param byte_len[in]  Total length of data in bytes
+ */
+void disp_send_pixels(uint16_t *pixels, int byte_len)
+{
+    USPI_SET_DATA_WIDTH(CONFIG_DISP_SPI, 16);
+    nu_uspi_transfer(&s_NuUSPI, (const void *)pixels, NULL, byte_len);
+}
+
+static int ili9341_uspi_send_then_recv(struct nu_uspi *psNuUSPI, const uint8_t *tx, int tx_len, uint8_t *rx, int rx_len, int dw)
+{
+    USPI_SET_DATA_WIDTH(psNuUSPI->base, dw * 8);
+
+    if (psNuUSPI->ss_pin > 0)
+    {
+        GPIO_PIN_DATA(NU_GET_PORT(psNuUSPI->ss_pin), NU_GET_PIN(psNuUSPI->ss_pin)) = 0;
+    }
+    else
+    {
+        USPI_SET_SS_LOW(psNuUSPI->base);
+    }
+
+    if (tx)
+    {
+        DISP_CLR_RS;
+        int sent = 0;
+        while (sent < tx_len)
+        {
+            sent += nu_uspi_write(psNuUSPI->base, tx + sent, dw);
+        }
+        while (USPI_IS_BUSY(psNuUSPI->base));
+    }
+
+    DISP_SET_RS;
+
+    /* Clear USPI RX FIFO */
+    nu_uspi_drain_rxfifo(psNuUSPI->base);
+
+    if (rx)
+    {
+        uint32_t dummy_tx = 0xFFFFFFFF;
+        uint8_t *curr_rx = rx;
+        int remaining = rx_len;
+        int received = 0;
+
+        while (received < rx_len)
+        {
+            int w = nu_uspi_write(psNuUSPI->base, (uint8_t *)&dummy_tx, dw);
+            remaining -= w;
+            while (USPI_IS_BUSY(psNuUSPI->base));
+
+            /* Read data from RX FIFO */
+            while (USPI_GET_RX_EMPTY_FLAG(psNuUSPI->base));
+            received += nu_uspi_read(psNuUSPI->base, curr_rx + received, dw);
+        }
+    }
+
+    if (psNuUSPI->ss_pin > 0)
+    {
+        GPIO_PIN_DATA(NU_GET_PORT(psNuUSPI->ss_pin), NU_GET_PIN(psNuUSPI->ss_pin)) = 1;
+    }
+    else
+    {
+        USPI_SET_SS_HIGH(psNuUSPI->base);
+    }
+
+    return 0;
+}
+
+typedef union
+{
+    uint32_t rgbx;
+    struct
+    {
+        uint8_t x;
+        uint8_t r;
+        uint8_t g;
+        uint8_t b;
+    } S;
+} ili9341_color;
+
+static disp_area_t s_receive_area = {0};
+void disp_ili9341_set_area(const disp_area_t *area)
+{
+    s_receive_area = *area;
+}
+
+void disp_receive_pixels(uint16_t *pixels, int byte_len)
+{
+    uint8_t cmd = 0x2E;
+
+    int32_t w = (int32_t)(s_receive_area.x2 - s_receive_area.x1 + 1);
+    int32_t h = (int32_t)(s_receive_area.y2 - s_receive_area.y1 + 1);
+    int32_t x = (int32_t)(s_receive_area.x1);
+    int32_t y = (int32_t)(s_receive_area.y1);
+
+    // Slow down SPI clock frequency when reading.
+    USPI_SetBusClock(s_NuUSPI.base, CONFIG_DISP_SPI_CLOCK / 4);
+
+    for (int j = y; j < y + h; j++)
+    {
+        for (int i = x; i < x + w; i++)
+        {
+            ili9341_color bgrx = {0};
+
+            disp_set_column(i, i);
+            disp_set_page(j, j);
+            ili9341_uspi_send_then_recv(&s_NuUSPI, &cmd, 1, (void *)&bgrx, sizeof(bgrx), 1);
+
+            *pixels = ((bgrx.S.r >> 3) << 11) | ((bgrx.S.g >> 2) << 5) | (bgrx.S.b >> 3);
+            pixels++;
+            //printf("x:%02x r:%02x g:%02x b:%02x\n", bgrx.S.x, bgrx.S.r, bgrx.S.g, bgrx.S.b);
+            //printf("[%d] %08x -> %04x\n", i, bgrx.rgbx, pixels[i]);
+        }
+    }
+
+    // Reset SPI clock frequency to default.
+    USPI_SetBusClock(s_NuUSPI.base, CONFIG_DISP_SPI_CLOCK);
 }
