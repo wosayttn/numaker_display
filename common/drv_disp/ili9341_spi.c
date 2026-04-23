@@ -204,7 +204,7 @@ void disp_receive_pixels(uint16_t *pixels, int byte_len)
     int32_t y = (int32_t)(s_receive_area.y1);
 
     // Slow down SPI clock frequency when reading.
-    SPI_SetBusClock(s_NuSPI.base, CONFIG_DISP_SPI_CLOCK / 2);
+    SPI_SetBusClock(s_NuSPI.base, CONFIG_DISP_SPI_CLOCK / 4);
 
     for (int j = y; j < y + h; j++)
     {
