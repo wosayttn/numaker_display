@@ -496,9 +496,9 @@
               <FilePath>..\..\..\bsp\m3351\Library\Device\Nuvoton\M3351\Source\system_M3351.c</FilePath>
             </File>
             <File>
-              <FileName>usci_spi.c</FileName>
+              <FileName>spi.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\bsp\m3351\Library\StdDriver\src\usci_spi.c</FilePath>
+              <FilePath>..\..\..\bsp\m3351\Library\StdDriver\src\spi.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -511,9 +511,9 @@
               <FilePath>..\plat_driver\drv_pdma.c</FilePath>
             </File>
             <File>
-              <FileName>drv_uspi.c</FileName>
+              <FileName>drv_spi.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\plat_driver\drv_uspi.c</FilePath>
+              <FilePath>..\plat_driver\drv_spi.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -591,9 +591,9 @@
               <FilePath>..\..\..\common\drv_indev\touch_adc_calibration.c</FilePath>
             </File>
             <File>
-              <FileName>ili9341_uspi.c</FileName>
+              <FileName>ili9341_spi.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\common\drv_disp\ili9341_uspi.c</FilePath>
+              <FilePath>..\..\..\common\drv_disp\ili9341_spi.c</FilePath>
             </File>
           </Files>
         </Group>
